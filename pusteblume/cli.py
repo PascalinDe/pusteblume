@@ -16,16 +16,32 @@
 
 
 """
-:synopsis: Main routine.
+:synopsis: Command-line interface.
 """
 
 
 # standard library imports
+import argparse
+
 # third party imports
 # library specific imports
-import pusteblume.cli
+from pusteblume import METADATA
 
 
-def main():
-    """Main routine."""
-    pusteblume.cli.init_argument_parser().parse_args()
+def init_argument_parser():
+    """Initialize argument parser.
+
+    :returns: argument parser
+    :rtype: argparse.ArgumentParser
+    """
+    parser = argparse.ArgumentParser(
+        prog=METADATA["name"],
+        description=METADATA["description"],
+    )
+    parser.add_argument(
+        "--version",
+        action="version",
+        version=f"%(prog)s {METADATA['version']}",
+        help="print %(prog)s version",
+    )
+    return parser
