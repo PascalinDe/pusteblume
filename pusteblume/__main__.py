@@ -25,7 +25,10 @@
 # library specific imports
 import pusteblume.cli
 
+from pusteblume import load_config
+
 
 def main():
     """Main routine."""
+    config = load_config()
     pusteblume.cli.init_argument_parser().parse_args()
