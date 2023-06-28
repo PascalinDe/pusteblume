@@ -24,6 +24,7 @@
 # third party imports
 # library specific imports
 import pusteblume.cli
+import pusteblume.tasks
 
 from pusteblume import load_config
 
@@ -31,4 +32,5 @@ from pusteblume import load_config
 def main():
     """Main routine."""
     config = load_config()
+    pusteblume.tasks.init_database(config)
     pusteblume.cli.init_argument_parser().parse_args()
