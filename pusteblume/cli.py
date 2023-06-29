@@ -55,4 +55,25 @@ def init_argument_parser():
         version=f"%(prog)s {METADATA['version']}",
         help="print %(prog)s version",
     )
+    _init_subparsers(parser)
     return parser
+
+
+def _init_subparsers(parser):
+    """Initialize subparsers.
+
+    :param argparse.ArgumentParser parser: argument parser
+    """
+    subcommands = {}
+    subparsers = parser.add_subparsers()
+    for subcommand in subcommands:
+        subparser = subparsers.add_parser(
+            subcommand,
+            help=subcommands[subcommand]["help"],
+        )
+        subparser.set_defaults(func=subcommands[subcommand]["func"])
+        for argument in subcommands[subcommand]["arguments"]:
+            subparser.add_argument(
+                argument,
+                **subcommands[subcommand]["arguments"][argument],
+            )
