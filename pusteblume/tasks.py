@@ -22,7 +22,6 @@
 
 # standard library imports
 import sqlite3
-import collections
 
 # third party imports
 # library specific imports
