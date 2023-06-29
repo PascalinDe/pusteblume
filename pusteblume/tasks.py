@@ -98,3 +98,14 @@ def init_database(config):
             config,
             f"CREATE TABLE IF NOT EXISTS {table} ({','.join(columns)})",
         )
+
+
+def list(config):
+    """List tasks.
+
+    :param configparser.ConfigParser config: configuration
+
+    :returns: output
+    :rtype: str
+    """
+    raise NotImplementedError

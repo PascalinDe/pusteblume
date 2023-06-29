@@ -25,6 +25,8 @@ import argparse
 
 # third party imports
 # library specific imports
+import pusteblume.tasks
+
 from pusteblume import METADATA
 
 
@@ -64,7 +66,13 @@ def _init_subparsers(parser):
 
     :param argparse.ArgumentParser parser: argument parser
     """
-    subcommands = {}
+    subcommands = {
+        "list": {
+            "help": "list tasks",
+            "arguments": {},
+            "func": pusteblume.tasks.list,
+        },
+    }
     subparsers = parser.add_subparsers()
     for subcommand in subcommands:
         subparser = subparsers.add_parser(

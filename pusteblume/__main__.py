@@ -36,4 +36,14 @@ def main():
     config = load_config()
     pusteblume.tasks.init_database(config)
     argument_parser = pusteblume.cli.init_argument_parser()
-    argument_parser.parse_args(pusteblume.cli.split(sys.argv[1:]))
+    args = argument_parser.parse_args(pusteblume.cli.split(sys.argv[1:]))
+    try:
+        print(
+            args.func(
+                config,
+                **{k: v for k, v in vars(args).items() if k != "func"},
+            )
+        )
+    except Exception:
+        print(f"subcommand '{sys.argv[1]}' failed")
+        raise SystemExit
