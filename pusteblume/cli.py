@@ -28,6 +28,17 @@ import argparse
 from pusteblume import METADATA
 
 
+def split(argv):
+    """Split command-line arguments.
+
+    :param list argv: command-line arguments
+
+    :returns: command-line arguments
+    :rtype: list
+    """
+    return argv
+
+
 def init_argument_parser():
     """Initialize argument parser.
 

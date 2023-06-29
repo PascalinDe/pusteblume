@@ -21,6 +21,8 @@
 
 
 # standard library imports
+import sys
+
 # third party imports
 # library specific imports
 import pusteblume.cli
@@ -33,4 +35,5 @@ def main():
     """Main routine."""
     config = load_config()
     pusteblume.tasks.init_database(config)
-    pusteblume.cli.init_argument_parser().parse_args()
+    argument_parser = pusteblume.cli.init_argument_parser()
+    argument_parser.parse_args(pusteblume.cli.split(sys.argv[1:]))
