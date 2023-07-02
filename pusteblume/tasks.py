@@ -21,6 +21,7 @@
 
 
 # standard library imports
+import os
 import sqlite3
 import datetime
 import collections
@@ -207,4 +208,29 @@ def list(config):
     :returns: output
     :rtype: str
     """
-    raise NotImplementedError
+    rows = _execute(
+        config,
+        "SELECT id,name,start_time,end_time FROM task",
+    )
+    if not rows:
+        return ""
+    tasks = []
+    for (task_id, name, start_time, end_time) in rows:
+        tasks.append(
+            Task(
+                name,
+                [
+                    row[0]
+                    for row in _execute(
+                        config,
+                        """SELECT tag.name
+                        FROM tag JOIN added_to ON tag.id = added_to.tag_id
+                        WHERE added_to.task_id = ?
+                        """,
+                        (task_id,)
+                    )
+                ],
+                (start_time, end_time),
+            ),
+        )
+    return os.linesep.join(task.pprinted_long for task in tasks)
