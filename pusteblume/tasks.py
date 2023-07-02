@@ -22,9 +22,108 @@
 
 # standard library imports
 import sqlite3
+import datetime
+import collections
 
 # third party imports
 # library specific imports
+
+
+_Task = collections.namedtuple("Task", ("name", "tags", "time_range"))
+
+
+class Task(_Task):
+    """Task."""
+
+    __slots__ = ()
+
+    @property
+    def runtime(self):
+        """Runtime (in seconds).
+
+        :returns: runtime
+        :rtype: int
+        """
+        if not self.time_range[1]:
+            delta = datetime.datetime.now() - self.time_range[0]
+        else:
+            delta = self.time_range[1] - self.time_range[0]
+        if delta.days >= 1:
+            return delta.seconds + delta.days * (24 * 60 * 60)
+        return delta.seconds
+
+    @property
+    def pprinted_tags(self):
+        """Pretty-printed tags.
+
+        :returns: pretty-printed tags
+        :rtype: str
+        """
+        return "".join(f"[{tag}]" for tag in self.tags)
+
+    @property
+    def pprinted_short(self):
+        """Pretty-printed short form.
+
+        :returns: pretty-printed short form
+        :rtype: str
+        """
+        return f"{self.name} {self.pprinted_tags}"
+
+    @property
+    def pprinted_time_range(self):
+        """Pretty-printed time range.
+
+        :returns: pretty-printed time range
+        :rtype: str
+        """
+        start_time, end_time = self.time_range
+        if not end_time:
+            pprinted_end_time = "…"
+        else:
+            pprinted_end_time = end_time.strftime("%H:%S %Y-%m-%d")
+        if end_time and end_time.date == start_time.date:
+            pprinted_start_time = start_time.strftime("%H:%S")
+        else:
+            pprinted_start_time = start_time.strftime("%H:%S %Y-%m-%d")
+        return f"{pprinted_start_time}-{pprinted_end_time}"
+
+    @property
+    def pprinted_time_range_parentheses(self):
+        """Pretty-printed time range in parentheses.
+
+        :returns: pretty-printed time range in parentheses
+        :rtype: str
+        """
+        return f"({self.pprinted_time_range})"
+
+    @property
+    def pprinted_medium(self):
+        """Pretty-printed medium form.
+
+        :returns: pretty-printed medium form
+        :rtype: str
+        """
+        return f"{self.pprinted_short} {self.pprinted_time_range_parentheses}"
+
+    @property
+    def pprinted_runtime(self):
+        """Pretty-printed runtime.
+
+        :returns: pretty-printed runtime
+        :rtype: str
+        """
+        hours, minutes = divmod(divmod(self.runtime, 60)[0], 60)
+        return f"({hours}h{minutes}m)"
+
+    @property
+    def pprinted_long(self):
+        """Pretty-printed long form.
+
+        :returns: pretty-printed long form
+        :rtype: str
+        """
+        return f"{self.pprinted_time_range}{self.pprinted_runtime} {self.pprinted_short}"   # noqa
 
 
 def _connect(config):
