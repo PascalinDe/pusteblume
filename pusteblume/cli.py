@@ -21,6 +21,7 @@
 
 
 # standard library imports
+import re
 import argparse
 
 # third party imports
@@ -28,6 +29,9 @@ import argparse
 import pusteblume.tasks
 
 from pusteblume import METADATA
+
+
+RESERVED_CHARS = "[]"
 
 
 def split(argv):
@@ -38,7 +42,26 @@ def split(argv):
     :returns: command-line arguments
     :rtype: list
     """
-    return argv
+    if len(argv) == 1:
+        return argv
+    args = [argv[0]]    # argumentless subcommand
+    sep = ""
+    for split in re.split(
+        fr"([{re.escape(RESERVED_CHARS)}])",
+        " ".join(argv[1:]),
+    ):
+        split = split.strip()
+        if not split:
+            continue
+        if split in RESERVED_CHARS:
+            if split == "[":
+                sep = split
+            if split == "]":
+                args[-1] += split
+            continue
+        args.append(sep + split)
+        sep = ""
+    return args
 
 
 def init_argument_parser():
