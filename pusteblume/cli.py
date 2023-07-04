@@ -34,6 +34,38 @@ from pusteblume import METADATA
 RESERVED_CHARS = "[]"
 
 
+def _name(string):
+    """Assert string matches 'name' pattern.
+
+    :param str string: string
+
+    :raises: argparse.ArgumentError
+
+    :returns: name
+    :rtype: str
+    """
+    if re.findall(fr"[{re.escape(RESERVED_CHARS)}]", string):
+        raise argparse.ArgumentError(
+            f"'{string}' contains reserved character(s) ('{RESERVED_CHARS}')"
+        )
+    return string
+
+
+def _tag(string):
+    """Assert string matches 'tag' pattern.
+
+    :param str string: string
+
+    :raises: argparse.ArgumentError
+
+    :returns: tag
+    :rtype: str
+    """
+    if match := re.match(r"\[(.+?)\]", string):
+        return _name(match.group(1))
+    raise argparse.ArgumentError(f"'{string}' is not a valid tag")
+
+
 def split(argv):
     """Split command-line arguments.
 
@@ -94,6 +126,21 @@ def _init_subparsers(parser):
             "help": "list tasks",
             "arguments": {},
             "func": pusteblume.tasks.list,
+        },
+        "start": {
+            "help": "start task",
+            "arguments": {
+                "name": {
+                    "type": _name,
+                    "help": "task name, e.g. 'debug command-line interface'",
+                },
+                "tag": {
+                    "nargs": "*",
+                    "type": _tag,
+                    "help": "tag(s), e.g. '[v1.0]'",
+                },
+            },
+            "func": pusteblume.tasks.start,
         },
     }
     subparsers = parser.add_subparsers()

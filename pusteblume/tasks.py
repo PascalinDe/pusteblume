@@ -234,3 +234,13 @@ def list(config):
             ),
         )
     return os.linesep.join(task.pprinted_long for task in tasks)
+
+
+def start(config, name=None, tag=tuple()):
+    """Start task.
+
+    :param configparser.ConfigParser config: configuration
+    :param str name: task name
+    :param tuple tag: tag(s)
+    """
+    raise NotImplementedError
