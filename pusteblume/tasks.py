@@ -244,3 +244,11 @@ def start(config, name=None, tag=tuple()):
     :param tuple tag: tag(s)
     """
     raise NotImplementedError
+
+
+def stop(config):
+    """Stop task.
+
+    :param configparser.ConfigParser config: configuration
+    """
+    raise NotImplementedError

@@ -142,6 +142,11 @@ def _init_subparsers(parser):
             },
             "func": pusteblume.tasks.start,
         },
+        "stop": {
+            "help": "stop task",
+            "arguments": {},
+            "func": pusteblume.tasks.stop,
+        },
     }
     subparsers = parser.add_subparsers()
     for subcommand in subcommands:
