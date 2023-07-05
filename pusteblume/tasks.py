@@ -200,6 +200,27 @@ def init_database(config):
         )
 
 
+def _query_related_tags(config, task_id):
+    """Query related tags.
+
+    :param configparser.ConfigParser config: configuration
+    :param int task_id: task ID
+
+    :returns: related tags
+    :rtype: list
+    """
+    return [
+        row[0]
+        for row in _execute(
+            config,
+            """SELECT tag.name
+            FROM tag JOIN added_to ON tag.id = added_to.tag_id
+            WHERE added_to.task_id = ?""",
+            (task_id,),
+        )
+    ]
+
+
 def list(config):
     """List tasks.
 
@@ -219,17 +240,7 @@ def list(config):
         tasks.append(
             Task(
                 name,
-                [
-                    row[0]
-                    for row in _execute(
-                        config,
-                        """SELECT tag.name
-                        FROM tag JOIN added_to ON tag.id = added_to.tag_id
-                        WHERE added_to.task_id = ?
-                        """,
-                        (task_id,)
-                    )
-                ],
+                _query_related_tags(config, task_id),
                 (start_time, end_time),
             ),
         )
@@ -250,5 +261,28 @@ def stop(config):
     """Stop task.
 
     :param configparser.ConfigParser config: configuration
+
+    :raises: NoRunningTaskError
     """
-    raise NotImplementedError
+    rows = _execute(
+        config,
+        "SELECT id,name,start_time FROM task WHERE end_time IS NULL",
+    )
+    if not rows:
+        return "no running task"
+    end_time = datetime.datetime.now()
+    _execute(
+        config,
+        "UPDATE task SET end_time = ? WHERE end_time IS NULL",
+        (end_time,)
+    )
+    return os.linesep.join(
+        [
+            Task(
+                name,
+                _query_related_tags(config, task_id),
+                (start_time, end_time),
+            ).pprinted_medium
+            for (task_id, name, start_time) in rows
+        ]
+    )
