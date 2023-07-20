@@ -82,11 +82,11 @@ class Task(_Task):
         if not end_time:
             pprinted_end_time = "…"
         else:
-            pprinted_end_time = end_time.strftime("%H:%S %Y-%m-%d")
+            pprinted_end_time = end_time.strftime("%H:%M %Y-%m-%d")
         if end_time and end_time.date == start_time.date:
-            pprinted_start_time = start_time.strftime("%H:%S")
+            pprinted_start_time = start_time.strftime("%H:%M")
         else:
-            pprinted_start_time = start_time.strftime("%H:%S %Y-%m-%d")
+            pprinted_start_time = start_time.strftime("%H:%M %Y-%m-%d")
         return f"{pprinted_start_time}-{pprinted_end_time}"
 
     @property
