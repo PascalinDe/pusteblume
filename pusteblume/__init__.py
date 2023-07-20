@@ -39,7 +39,7 @@ CONFIG = {
 }
 METADATA = {
     "name": "pusteblume",
-    "version": "v1.0",
+    "version": "v1.1",
     "description": "Light-weight time tracking tool.",
     "author": "Carine Dengler",
     "author_email": "pusteblume@pascalin.de",
