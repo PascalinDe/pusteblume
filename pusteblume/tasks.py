@@ -254,7 +254,35 @@ def start(config, name=None, tags=tuple()):
     :param str name: task name
     :param tuple tags: tag(s)
     """
-    raise NotImplementedError
+    start_time = datetime.datetime.now()
+    output = stop(config)
+    ((task_id,),) = _execute(
+        config,
+        "INSERT INTO task(name,start_time) VALUES(?,?) RETURNING id",
+        (name, start_time)
+    )
+    for tag in tags:
+        rows = _execute(
+            config,
+            "SELECT id FROM tag WHERE name = ?",
+            (tag,),
+        )
+        if not rows:
+            ((tag_id,),) = _execute(
+                config,
+                "INSERT INTO tag(name) VALUES(?) RETURNING id",
+                (tag,),
+            )
+        else:
+            ((tag_id,),) = rows
+        _execute(
+            config,
+            "INSERT INTO added_to(task_id,tag_id) VALUES(?,?)",
+            (task_id, tag_id),
+        )
+    return os.linesep.join(
+        (output, Task(name, tags, (start_time, None)).pprinted_short)
+    )
 
 
 def stop(config):
