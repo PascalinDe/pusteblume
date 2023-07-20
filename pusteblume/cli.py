@@ -134,7 +134,7 @@ def _init_subparsers(parser):
                     "type": _name,
                     "help": "task name, e.g. 'debug command-line interface'",
                 },
-                "tag": {
+                "tags": {
                     "nargs": "*",
                     "type": _tag,
                     "help": "tag(s), e.g. '[v1.0]'",
