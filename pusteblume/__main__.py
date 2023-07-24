@@ -22,6 +22,7 @@
 
 # standard library imports
 import sys
+import logging
 
 # third party imports
 # library specific imports
@@ -33,6 +34,7 @@ from pusteblume import load_config
 
 def main():
     """Main routine."""
+    logging.basicConfig(level=logging.DEBUG)
     config = load_config()
     pusteblume.tasks.init_database(config)
     argument_parser = pusteblume.cli.init_argument_parser()
@@ -44,6 +46,7 @@ def main():
                 **{k: v for k, v in vars(args).items() if k != "func"},
             )
         )
-    except Exception:
+    except Exception as exception:
+        logging.getLogger(main.__name__).exception(exception)
         print(f"subcommand '{sys.argv[1]}' failed")
         raise SystemExit
