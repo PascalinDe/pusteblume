@@ -44,7 +44,7 @@ def _name(string):
     :returns: name
     :rtype: str
     """
-    if re.findall(fr"[{re.escape(RESERVED_CHARS)}]", string):
+    if re.findall(rf"[{re.escape(RESERVED_CHARS)}]", string):
         raise argparse.ArgumentError(
             f"'{string}' contains reserved character(s) ('{RESERVED_CHARS}')"
         )
@@ -76,10 +76,10 @@ def split(argv):
     """
     if len(argv) == 1:
         return argv
-    args = [argv[0]]    # argumentless subcommand
+    args = [argv[0]]  # argumentless subcommand
     sep = ""
     for split in re.split(
-        fr"([{re.escape(RESERVED_CHARS)}])",
+        rf"([{re.escape(RESERVED_CHARS)}])",
         " ".join(argv[1:]),
     ):
         split = split.strip()

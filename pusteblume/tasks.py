@@ -124,7 +124,7 @@ class Task(_Task):
         :returns: pretty-printed long form
         :rtype: str
         """
-        return f"{self.pprinted_time_range}{self.pprinted_runtime} {self.pprinted_short}"   # noqa
+        return f"{self.pprinted_time_range}{self.pprinted_runtime} {self.pprinted_short}"  # noqa
 
 
 def _connect(config):
@@ -236,7 +236,7 @@ def list(config):
     if not rows:
         return ""
     tasks = []
-    for (task_id, name, start_time, end_time) in rows:
+    for task_id, name, start_time, end_time in rows:
         tasks.append(
             Task(
                 name,
@@ -259,7 +259,7 @@ def start(config, name=None, tags=tuple()):
     ((task_id,),) = _execute(
         config,
         "INSERT INTO task(name,start_time) VALUES(?,?) RETURNING id",
-        (name, start_time)
+        (name, start_time),
     )
     for tag in tags:
         rows = _execute(
@@ -299,11 +299,7 @@ def stop(config):
     if not rows:
         return "no running task"
     end_time = datetime.datetime.now()
-    _execute(
-        config,
-        "UPDATE task SET end_time = ? WHERE end_time IS NULL",
-        (end_time,)
-    )
+    _execute(config, "UPDATE task SET end_time = ? WHERE end_time IS NULL", (end_time,))
     return os.linesep.join(
         [
             Task(

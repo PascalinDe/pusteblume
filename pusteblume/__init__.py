@@ -29,11 +29,7 @@ import configparser
 # library specific imports
 
 
-CONFIG_FILE = (
-    pathlib.Path(os.environ["HOME"])
-    / ".config"
-    / "pusteblume.ini"
-)
+CONFIG_FILE = pathlib.Path(os.environ["HOME"]) / ".config" / "pusteblume.ini"
 CONFIG = {
     "database": ["path", "name"],
 }
@@ -90,16 +86,16 @@ def load_config():
     if errors:
         raise SystemExit(
             os.linesep.join(
-                (f"configuration file '{CONFIG_FILE}' contains errors", *errors)
+                (
+                    f"configuration file '{CONFIG_FILE}' contains errors",
+                    *errors,
+                ),
             )
         )
     config.add_section("evaluated")
     config.set(
         "evaluated",
         "database",
-        str(
-            pathlib.Path(config["database"]["path"])
-            / config["database"]["name"]
-        ),
+        str(pathlib.Path(config["database"]["path"]) / config["database"]["name"]),
     )
     return config
