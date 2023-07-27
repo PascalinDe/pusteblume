@@ -39,13 +39,13 @@ def _name(string):
 
     :param str string: string
 
-    :raises: argparse.ArgumentError
+    :raises: argparse.ArgumentTypeError
 
     :returns: name
     :rtype: str
     """
     if re.findall(rf"[{re.escape(RESERVED_CHARS)}]", string):
-        raise argparse.ArgumentError(
+        raise argparse.ArgumentTypeError(
             f"'{string}' contains reserved character(s) ('{RESERVED_CHARS}')"
         )
     return string
@@ -56,14 +56,14 @@ def _tag(string):
 
     :param str string: string
 
-    :raises: argparse.ArgumentError
+    :raises: argparse.ArgumentTypeError
 
     :returns: tag
     :rtype: str
     """
     if match := re.match(r"\[(.+?)\]", string):
         return _name(match.group(1))
-    raise argparse.ArgumentError(f"'{string}' is not a valid tag")
+    raise argparse.ArgumentTypeError(f"'{string}' is not a valid tag")
 
 
 def split(argv):

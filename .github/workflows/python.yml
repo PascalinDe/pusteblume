@@ -30,3 +30,6 @@ jobs:
           black --check --quiet .
       - name: Lint Python code with Flake8
         run: flake8
+      - name: Test with Pytest
+        run: |
+          pytest
