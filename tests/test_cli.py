@@ -67,3 +67,38 @@ class ArgumentTypeTestCase(unittest.TestCase):
         """
         with self.assertRaises(argparse.ArgumentTypeError):
             pusteblume.cli._tag(f"[{pusteblume.cli.RESERVED_CHARS}]")
+
+
+class SplitTestCase(unittest.TestCase):
+    """Command-line arguments splitting test case."""
+
+    def test_start(self):
+        """Test splitting 'start' subcommand and its command-line arguments.
+
+        Trying: split 'start' subcommand and its command-line arguments
+        Expecting: 'start' subcommand and its command-line arguments
+        """
+        args = ["start", "write test cases"]
+        # name
+        self.assertListEqual(pusteblume.cli.split(args), args)
+        # name and tags
+        args = [*args, "[pusteblume]", "[v1.2]"]
+        self.assertListEqual(pusteblume.cli.split(args), args)
+
+    def test_stop(self):
+        """Test splitting 'stop' subcommand.
+
+        Trying: split 'stop' subcommand
+        Expecting: 'stop' subcommand
+        """
+        args = ["stop"]
+        self.assertListEqual(pusteblume.cli.split(args), args)
+
+    def test_list(self):
+        """Test splitting 'list' subcommand.
+
+        Trying: split 'list' subcommand
+        Expecting: 'list' subcommand
+        """
+        args = ["list"]
+        self.assertListEqual(pusteblume.cli.split(args), args)
