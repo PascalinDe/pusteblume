@@ -253,6 +253,9 @@ def start(config, name=None, tags=tuple()):
     :param configparser.ConfigParser config: configuration
     :param str name: task name
     :param tuple tags: tag(s)
+
+    :returns: output
+    :rtype: str
     """
     start_time = datetime.datetime.now()
     output = stop(config)
@@ -290,7 +293,8 @@ def stop(config):
 
     :param configparser.ConfigParser config: configuration
 
-    :raises: NoRunningTaskError
+    :returns: output
+    :rtype: str
     """
     rows = _execute(
         config,
