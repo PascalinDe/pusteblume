@@ -29,6 +29,8 @@ import unittest
 # library specific imports
 import pusteblume.tasks
 
+from tests import BaseTestCase
+
 
 class TaskTestCase(unittest.TestCase):
     """Task test case."""
@@ -64,3 +66,188 @@ class TaskTestCase(unittest.TestCase):
         Expecting: runtime of >= 300 seconds
         """
         self.assertTrue(self.stopped_task.runtime >= 300)
+
+
+class TasksTestCase(BaseTestCase):
+    """Task tracking and management tools test case."""
+
+    def setUp(self):
+        """Set up task tracking and management tools test case."""
+        self.name = "write test cases"
+        self.tags = ("pusteblume", "v1.2")
+        self.start_time = datetime.datetime.now()
+        pusteblume.tasks.init_database(self.config)
+
+    def tearDown(self):
+        """Tear down task tracking and management tools test case."""
+        self.database.unlink()
+
+    def _insert_task(self, name, tags, start_time, end_time):
+        """Insert task.
+
+        :param str name: task name
+        :param tuple tags: tags
+        :param datetime.datetime start_time: start time
+        :param datetime.datetime end_time: end time
+
+        :returns: task ID
+        :rtype: int
+        """
+        ((task_id,),) = pusteblume.tasks._execute(
+            self.config,
+            "INSERT INTO task(name,start_time,end_time) VALUES(?,?,?) RETURNING id",
+            (name, start_time, end_time),
+        )
+        for tag in tags:
+            ((tag_id,),) = pusteblume.tasks._execute(
+                self.config,
+                "INSERT INTO tag(name) VALUES(?) RETURNING id",
+                (tag,),
+            )
+            pusteblume.tasks._execute(
+                self.config,
+                "INSERT INTO added_to(task_id,tag_id) VALUES(?,?)",
+                (task_id, tag_id),
+            )
+        return task_id
+
+    def test_init_database(self):
+        """Test initialise SQLite database.
+
+        Trying: initialise SQLite database
+        Expecting: 'task', 'tag' and 'added_to' tables have been initialised
+        """
+        self.assertListEqual(
+            pusteblume.tasks._execute(
+                self.config,
+                "SELECT name FROM sqlite_master WHERE type = 'table'",
+            ),
+            [("task",), ("tag",), ("added_to",),],
+        )
+
+    def test_query_related_tags(self):
+        """Test querying related tags.
+
+        Trying: query related tags of task without tags
+        Expecting: related tags or empty list if there are none
+        """
+        for tags in ((), self.tags):
+            task_id = self._insert_task(self.name, tags, self.start_time, None)
+            self.assertListEqual(
+                pusteblume.tasks._query_related_tags(self.config, task_id),
+                list(tags),
+            )
+
+    def test_start_task_without_tags(self):
+        """Test starting task.
+
+        Trying: start task without tags
+        Expecting: 'task' table has been updated, 'added_to' and 'tag' tables
+            have not been updated
+        """
+        pusteblume.tasks.start(
+            self.config,
+            self.name,
+            (),
+        )
+        self.assertTrue(
+            pusteblume.tasks._execute(
+                self.config,
+                "SELECT 1 FROM task WHERE name = ?",
+                (self.name,),
+            ),
+        )
+        for table in ("tag", "added_to"):
+            self.assertFalse(
+                pusteblume.tasks._execute(
+                    self.config,
+                    f"SELECT 1 FROM {table}",
+                ),
+            )
+
+    def test_start_task_with_tags(self):
+        """Test starting task.
+
+        Trying: start task with tags
+        Expecting: 'task', 'added_to' and 'tag' tables have been updated
+        """
+        pusteblume.tasks.start(
+            self.config,
+            self.name,
+            self.tags,
+        )
+        self.assertTrue(
+            pusteblume.tasks._execute(
+                self.config,
+                "SELECT 1 FROM task WHERE name = ?",
+                (self.name,),
+            ),
+        )
+        ((task_id,),) = pusteblume.tasks._execute(
+            self.config,
+            "SELECT id FROM task WHERE name = ?",
+            (self.name,),
+        )
+        self.assertTrue(
+            pusteblume.tasks._execute(
+                self.config,
+                "SELECT 1 FROM tag WHERE name IN (?,?)",
+                self.tags,
+            ),
+        )
+        for row in pusteblume.tasks._execute(
+            self.config,
+            "SELECT 1 FROM tag WHERE name IN (?,?)",
+            self.tags,
+        ):
+            self.assertTrue(
+                pusteblume.tasks._execute(
+                    self.config,
+                    "SELECT 1 FROM added_to WHERE task_id = ? and tag_id = ?",
+                    (task_id, row[0]),
+                ),
+            )
+
+    def test_stop_stopped_task(self):
+        """Test stopping task.
+
+        Trying: stop stopped task
+        Expecting: 'task' table has not been updated
+        """
+        pusteblume.tasks.start(
+            self.config,
+            self.name,
+        )
+        end_time = datetime.datetime.now()
+        pusteblume.tasks._execute(
+            self.config,
+            "UPDATE task SET end_time = ? WHERE name = ?",
+            (end_time, self.name),
+        )
+        pusteblume.tasks.stop(self.config)
+        self.assertTrue(
+            pusteblume.tasks._execute(
+                self.config,
+                "SELECT 1 FROM task WHERE name = ? AND end_time = ?",
+                (self.name, end_time),
+            )
+        )
+
+    def test_stop_running_task(self):
+        """Test stopping task.
+
+        Trying: stop running task
+        Expecting: 'task' table has been updated
+        """
+        pusteblume.tasks.start(
+            self.config,
+            self.name,
+        )
+        pusteblume.tasks.stop(self.config)
+        self.assertFalse(
+            pusteblume.tasks._execute(
+                self.config,
+                "SELECT 1 FROM task WHERE name = ? AND end_time IS NULL",
+                (self.name,),
+            ),
+        )
