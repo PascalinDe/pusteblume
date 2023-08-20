@@ -122,7 +122,11 @@ class TasksTestCase(BaseTestCase):
                 self.config,
                 "SELECT name FROM sqlite_master WHERE type = 'table'",
             ),
-            [("task",), ("tag",), ("added_to",),],
+            [
+                ("task",),
+                ("tag",),
+                ("added_to",),
+            ],
         )
 
     def test_query_related_tags(self):
