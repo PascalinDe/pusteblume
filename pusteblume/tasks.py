@@ -28,6 +28,7 @@ import collections
 
 # third party imports
 # library specific imports
+import pusteblume.messages
 
 
 _Task = collections.namedtuple("Task", ("name", "tags", "time_range"))
@@ -288,6 +289,20 @@ def start(config, name=None, tags=tuple()):
     )
 
 
+def _query_currently_running_task(config):
+    """Query currently running task.
+
+    :param configparser.ConfigParser config: configuration
+
+    :returns: currently running task
+    :rtype: tuple
+    """
+    return _execute(
+        config,
+        "SELECT id,name,start_time FROM task WHERE end_time IS NULL",
+    )
+
+
 def stop(config):
     """Stop task.
 
@@ -296,12 +311,9 @@ def stop(config):
     :returns: output
     :rtype: str
     """
-    rows = _execute(
-        config,
-        "SELECT id,name,start_time FROM task WHERE end_time IS NULL",
-    )
+    rows = _query_currently_running_task(config)
     if not rows:
-        return "no running task"
+        return pusteblume.messages.MESSAGES["no_running_task"]
     end_time = datetime.datetime.now()
     _execute(config, "UPDATE task SET end_time = ? WHERE end_time IS NULL", (end_time,))
     return os.linesep.join(
@@ -314,3 +326,22 @@ def stop(config):
             for (task_id, name, start_time) in rows
         ]
     )
+
+
+def status(config):
+    """Show currently running task if any.
+
+    :param configparser.ConfigParser config: configuration
+
+    :returns: output
+    :rtype: str
+    """
+    rows = _query_currently_running_task(config)
+    if not rows:
+        return pusteblume.messages.MESSAGES["no_running_task"]
+    (task_id, name, start_time) = rows[0]
+    return Task(
+        name,
+        _query_related_tags(config, task_id),
+        (start_time, None),
+    ).pprinted_short

@@ -28,6 +28,7 @@ import unittest
 
 # library specific imports
 import pusteblume.tasks
+import pusteblume.messages
 
 from tests import BaseTestCase
 
@@ -142,6 +143,38 @@ class TasksTestCase(BaseTestCase):
                 list(tags),
             )
 
+    def test_query_currently_running_task_no_running_task(self):
+        """Test querying currently running task.
+
+
+        Trying: no running task
+        Expecting: empty tuple
+        """
+        self._insert_task(
+            self.name,
+            (),
+            self.start_time,
+            datetime.datetime.now(),
+        )
+        self.assertFalse(pusteblume.tasks._query_currently_running_task(self.config))
+
+    def test_query_currently_running_task_running_task(self):
+        """Test querying currently running task.
+
+        Trying: running task
+        Expecting: running task
+        """
+        task_id = self._insert_task(
+            self.name,
+            (),
+            self.start_time,
+            None,
+        )
+        self.assertEqual(
+            pusteblume.tasks._query_currently_running_task(self.config)[0][0],
+            task_id,
+        )
+
     def test_start_task_without_tags(self):
         """Test starting task.
 
@@ -254,4 +287,38 @@ class TasksTestCase(BaseTestCase):
                 "SELECT 1 FROM task WHERE name = ? AND end_time IS NULL",
                 (self.name,),
             ),
+        )
+
+    def test_status_no_running_task(self):
+        """Test showing currently running task.
+
+
+        Trying: no running task
+        Expecting: 'no running task' message
+        """
+        self.assertEqual(
+            pusteblume.tasks.status(self.config),
+            pusteblume.messages.MESSAGES["no_running_task"],
+        )
+
+    def test_status_running_task(self):
+        """Test showing currently running task.
+
+        Trying: running task
+        Expecting: message w/ running task
+        """
+        pusteblume.tasks.start(
+            self.config,
+            self.name,
+            self.tags,
+        )
+        ((start_time,),) = pusteblume.tasks._execute(
+            self.config,
+            "SELECT start_time FROM task WHERE name = ?",
+            (self.name,),
+        )
+        task = pusteblume.tasks.Task(self.name, self.tags, (start_time, None))
+        self.assertEqual(
+            pusteblume.tasks.status(self.config),
+            task.pprinted_short,
         )
