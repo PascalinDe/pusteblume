@@ -100,11 +100,19 @@ class TasksTestCase(BaseTestCase):
             (name, start_time, end_time),
         )
         for tag in tags:
-            ((tag_id,),) = pusteblume.tasks._execute(
+            rows = pusteblume.tasks._execute(
                 self.config,
-                "INSERT INTO tag(name) VALUES(?) RETURNING id",
+                "SELECT id FROM tag WHERE name = ?",
                 (tag,),
             )
+            if not rows:
+                ((tag_id,),) = pusteblume.tasks._execute(
+                    self.config,
+                    "INSERT INTO tag(name) VALUES(?) RETURNING id",
+                    (tag,),
+                )
+            else:
+                ((tag_id,),) = rows
             pusteblume.tasks._execute(
                 self.config,
                 "INSERT INTO added_to(task_id,tag_id) VALUES(?,?)",
