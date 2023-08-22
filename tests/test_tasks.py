@@ -21,6 +21,7 @@
 
 
 # standard library imports
+import os
 import datetime
 import unittest
 
@@ -294,6 +295,37 @@ class TasksTestCase(BaseTestCase):
                 self.config,
                 "SELECT 1 FROM task WHERE name = ? AND end_time IS NULL",
                 (self.name,),
+            ),
+        )
+
+    def test_list(self):
+        """Test listing tasks.
+
+        Trying: 1 stopped and 1 running task
+        Expecting: 1 stopped and 1 running task
+        """
+        running_task = pusteblume.tasks.Task(
+            self.name,
+            self.tags,
+            (
+                self.start_time + datetime.timedelta(minutes=5),
+                None,
+            ),
+        )
+        stopped_task = pusteblume.tasks.Task(
+            self.name,
+            self.tags,
+            (
+                self.start_time,
+                datetime.datetime.now(),
+            ),
+        )
+        for task in (running_task, stopped_task):
+            self._insert_task(task.name, task.tags, *task.time_range)
+        self.assertEqual(
+            pusteblume.tasks.list(self.config),
+            os.linesep.join(
+                task.pprinted_long for task in (running_task, stopped_task)
             ),
         )
 
