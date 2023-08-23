@@ -30,6 +30,8 @@ import collections
 # library specific imports
 import pusteblume.messages
 
+from pusteblume import colour_string
+
 
 _Task = collections.namedtuple("Task", ("name", "tags", "time_range"))
 
@@ -61,7 +63,10 @@ class Task(_Task):
         :returns: pretty-printed tags
         :rtype: str
         """
-        return "".join(f"[{tag}]" for tag in self.tags)
+        return colour_string(
+            "".join(f"[{tag}]" for tag in self.tags),
+            fg="bright_black",
+        )
 
     @property
     def pprinted_short(self):
@@ -70,7 +75,7 @@ class Task(_Task):
         :returns: pretty-printed short form
         :rtype: str
         """
-        return f"{self.name} {self.pprinted_tags}"
+        return f"{colour_string(self.name, fg='green')} {self.pprinted_tags}"
 
     @property
     def pprinted_time_range(self):
@@ -88,7 +93,10 @@ class Task(_Task):
             pprinted_start_time = start_time.strftime("%H:%M")
         else:
             pprinted_start_time = start_time.strftime("%H:%M %Y-%m-%d")
-        return f"{pprinted_start_time}-{pprinted_end_time}"
+        return colour_string(
+            f"{pprinted_start_time}-{pprinted_end_time}",
+            fg="magenta",
+        )
 
     @property
     def pprinted_time_range_parentheses(self):
@@ -97,7 +105,11 @@ class Task(_Task):
         :returns: pretty-printed time range in parentheses
         :rtype: str
         """
-        return f"({self.pprinted_time_range})"
+        return (
+            colour_string("(", fg="magenta")
+            + self.pprinted_time_range
+            + colour_string(")", fg="magenta")
+        )
 
     @property
     def pprinted_medium(self):
@@ -116,7 +128,7 @@ class Task(_Task):
         :rtype: str
         """
         hours, minutes = divmod(divmod(self.runtime, 60)[0], 60)
-        return f"({hours}h{minutes}m)"
+        return colour_string(f"({hours}h{minutes}m)", fg="yellow")
 
     @property
     def pprinted_long(self):

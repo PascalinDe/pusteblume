@@ -46,6 +46,32 @@ METADATA = {
         "Programming Language :: Python :: 3.11",
     ],
 }
+COLOURS = {
+    "fg": {
+        "black": 30,
+        "red": 31,
+        "green": 32,
+        "yellow": 33,
+        "blue": 34,
+        "magenta": 35,
+        "cyan": 36,
+        "white": 37,
+    },
+    "bg": {},
+}
+for k, v in list(COLOURS["fg"].items()):
+    COLOURS["fg"][f"bright_{k}"] = v + 60
+for k, v in list(COLOURS["fg"].items()):
+    COLOURS["bg"][k] = v + 10
+COLOURS["fg"]["default"] = 0
+COLOURS["bg"]["default"] = 0
+STYLES = {
+    "normal": 0,
+    "bold": 1,
+    "faint": 2,
+    "italic": 3,
+    "underline": 4,
+}
 
 
 def generate_default_config():
@@ -99,3 +125,23 @@ def load_config():
         str(pathlib.Path(config["database"]["path"]) / config["database"]["name"]),
     )
     return config
+
+
+def colour_string(string, style=None, fg=None, bg=None):
+    """Colour string.
+
+    :param str string: string
+    :param str style: style
+    :param str fg: foreground colour
+    :param str bg: background colour
+
+    :returns: coloured string
+    :rtype: str
+    """
+    style = STYLES.get(style, "")
+    fg = COLOURS["fg"].get(fg, "")
+    bg = COLOURS["bg"].get(bg, "")
+    ansi_escape_codes = ";".join(
+        str(escape_code) for escape_code in (style, fg, bg) if escape_code
+    )
+    return f"\033[{ansi_escape_codes}m{string}\033[m"
