@@ -27,6 +27,7 @@ import argparse
 # third party imports
 # library specific imports
 import pusteblume.tasks
+import pusteblume.errors
 
 from pusteblume import METADATA
 
@@ -46,7 +47,10 @@ def _name(string):
     """
     if re.findall(rf"[{re.escape(RESERVED_CHARS)}]", string):
         raise argparse.ArgumentTypeError(
-            f"'{string}' contains reserved character(s) ('{RESERVED_CHARS}')"
+            pusteblume.errors.ERRORS["cli"]["reserved_chars"].format(
+                string=string,
+                reserved_chars=RESERVED_CHARS,
+            ),
         )
     return string
 
@@ -63,7 +67,9 @@ def _tag(string):
     """
     if match := re.match(r"\[(.+?)\]", string):
         return _name(match.group(1))
-    raise argparse.ArgumentTypeError(f"'{string}' is not a valid tag")
+    raise argparse.ArgumentTypeError(
+        pusteblume.errors.ERRORS["cli"]["invalid_tag"].format(string=string),
+    )
 
 
 def split(argv):
