@@ -32,11 +32,12 @@ import configparser
 class BaseTestCase(unittest.TestCase):
     """Base test case."""
 
+    DATA_DIR = pathlib.Path(__file__).parent / "data"
+
     def __init__(self, *args, **kwargs):
         """Initialise base test case."""
-        self.data_dir = pathlib.Path(__file__).parent / "data"
-        self.data_dir.mkdir(exist_ok=True)
-        self.database = self.data_dir / "temp.db"
+        BaseTestCase.DATA_DIR.mkdir(exist_ok=True)
+        self.database = BaseTestCase.DATA_DIR / "temp.db"
         self.config = configparser.ConfigParser()
         self.config.read_dict({"evaluated": {"database": str(self.database)}})
         super().__init__(*args, **kwargs)
