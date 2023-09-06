@@ -26,7 +26,9 @@
 
 
 MESSAGES = {
-    "no_running_task": "no running task",
+    "tasks": {
+        "no_running_task": "no running task",
+    },
     "config": {
         "default": "generated default configuration file {config_file}",
     },

@@ -338,7 +338,7 @@ class TasksTestCase(BaseTestCase):
         """
         self.assertEqual(
             pusteblume.tasks.status(self.config),
-            pusteblume.messages.MESSAGES["no_running_task"],
+            pusteblume.messages.MESSAGES["tasks"]["no_running_task"],
         )
 
     def test_status_running_task(self):

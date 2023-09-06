@@ -325,7 +325,7 @@ def stop(config):
     """
     rows = _query_currently_running_task(config)
     if not rows:
-        return pusteblume.messages.MESSAGES["no_running_task"]
+        return pusteblume.messages.MESSAGES["tasks"]["no_running_task"]
     end_time = datetime.datetime.now()
     _execute(config, "UPDATE task SET end_time = ? WHERE end_time IS NULL", (end_time,))
     return os.linesep.join(
@@ -350,7 +350,7 @@ def status(config):
     """
     rows = _query_currently_running_task(config)
     if not rows:
-        return pusteblume.messages.MESSAGES["no_running_task"]
+        return pusteblume.messages.MESSAGES["tasks"]["no_running_task"]
     (task_id, name, start_time) = rows[0]
     return Task(
         name,
