@@ -21,9 +21,6 @@
 
 
 # standard library imports
-import os
-import pathlib
-
 # third party imports
 # library specific imports
 
