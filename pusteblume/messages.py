@@ -27,4 +27,20 @@
 
 MESSAGES = {
     "no_running_task": "no running task",
+    "config": {
+        "default": "generated default configuration file {config_file}",
+    },
 }
+ERRORS = {
+    "config": {
+        "missing_section": "required section '{section}' missing",
+        "missing_key": "required key '{key}' in section '{section}' missing",
+        "errors": "configuration file {config_file} contains errors",
+    },
+}
+
+
+class InvalidConfig(Exception):
+    """Raised when configuration file is invalid."""
+
+    pass

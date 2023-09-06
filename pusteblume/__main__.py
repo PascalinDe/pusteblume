@@ -29,7 +29,7 @@ import logging
 import pusteblume.cli
 import pusteblume.tasks
 
-from pusteblume import load_config
+from pusteblume.config import load_config
 
 
 def main():
