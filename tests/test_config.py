@@ -27,7 +27,7 @@ import configparser
 # third party imports
 # library specific imports
 import pusteblume.config
-import pusteblume.messages
+import pusteblume.errors
 
 from tests import BaseTestCase
 
@@ -79,7 +79,7 @@ class ConfigTestCase(BaseTestCase):
         """
         # missing section
         config = configparser.ConfigParser()
-        with self.assertRaises(pusteblume.messages.InvalidConfig):
+        with self.assertRaises(pusteblume.errors.InvalidConfig):
             pusteblume.config.validate_config(config)
         # missing key
         config = configparser.ConfigParser()
@@ -90,5 +90,5 @@ class ConfigTestCase(BaseTestCase):
                 },
             },
         )
-        with self.assertRaises(pusteblume.messages.InvalidConfig):
+        with self.assertRaises(pusteblume.errors.InvalidConfig):
             pusteblume.config.validate_config(config)

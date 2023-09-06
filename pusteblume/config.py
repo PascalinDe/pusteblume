@@ -27,6 +27,7 @@ import configparser
 
 # third party imports
 # library specific imports
+import pusteblume.errors
 import pusteblume.messages
 
 
@@ -69,7 +70,7 @@ def validate_config(config):
     for section in CONFIG_SECTIONS:
         if section not in config.sections():
             errors.append(
-                pusteblume.messages.ERRORS["config"]["missing_section"].format(
+                pusteblume.errors.ERRORS["config"]["missing_section"].format(
                     section=section,
                 )
             )
@@ -77,16 +78,16 @@ def validate_config(config):
             for key in CONFIG_SECTIONS[section]:
                 if key not in config[section]:
                     errors.append(
-                        pusteblume.messages.ERRORS["config"]["missing_key"].format(
+                        pusteblume.errors.ERRORS["config"]["missing_key"].format(
                             key=key,
                             section=section,
                         ),
                     )
     if errors:
-        raise pusteblume.messages.InvalidConfig(
+        raise pusteblume.errors.InvalidConfig(
             os.linesep.join(
                 (
-                    pusteblume.messages.ERRORS["config"]["errors"].format(
+                    pusteblume.errors.ERRORS["config"]["errors"].format(
                         config_file=CONFIG_FILE,
                     ),
                     *errors,
