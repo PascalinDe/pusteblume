@@ -28,6 +28,7 @@ import argparse
 # library specific imports
 import pusteblume.tasks
 import pusteblume.errors
+import pusteblume.messages
 
 from pusteblume import METADATA
 
@@ -134,27 +135,27 @@ def _init_subparsers(parser):
             "func": pusteblume.tasks.list,
         },
         "start": {
-            "help": "start task",
+            "help": pusteblume.messages.MESSAGES["cli"]["help"]["start"],
             "arguments": {
                 "name": {
                     "type": _name,
-                    "help": "task name, e.g. 'debug command-line interface'",
+                    "help": pusteblume.messages.MESSAGES["cli"]["help"]["name"],
                 },
                 "tags": {
                     "nargs": "*",
                     "type": _tag,
-                    "help": "tag(s), e.g. '[v1.0]'",
+                    "help": pusteblume.messages.MESSAGES["cli"]["help"]["tags"],
                 },
             },
             "func": pusteblume.tasks.start,
         },
         "stop": {
-            "help": "stop task",
+            "help": pusteblume.messages.MESSAGES["cli"]["help"]["stop"],
             "arguments": {},
             "func": pusteblume.tasks.stop,
         },
         "status": {
-            "help": "show currently running task if any",
+            "help": pusteblume.messages.MESSAGES["cli"]["help"]["status"],
             "arguments": {},
             "func": pusteblume.tasks.status,
         },
