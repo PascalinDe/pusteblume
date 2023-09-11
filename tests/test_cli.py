@@ -27,6 +27,7 @@ import unittest
 # third party imports
 # library specific imports
 import pusteblume.cli
+import pusteblume.errors
 
 
 class ArgumentTypeTestCase(unittest.TestCase):
@@ -47,8 +48,15 @@ class ArgumentTypeTestCase(unittest.TestCase):
         Trying: invalid name
         Expecting: ArgumentTypeError
         """
-        with self.assertRaises(argparse.ArgumentTypeError):
-            pusteblume.cli._name(pusteblume.cli.RESERVED_CHARS)
+        with self.assertRaises(argparse.ArgumentTypeError) as exception:
+            pusteblume.cli._name(pusteblume.cli._RESERVED_CHARS)
+            self.assertEqual(
+                str(exception),
+                pusteblume.errors.ERRORS["cli"]["reserved_chars"].format(
+                    string=pusteblume.cli._RESERVED_CHARS,
+                    reserved_chars=pusteblume.cli._RESERVED_CHARS,
+                ),
+            )
 
     def test_valid_tag(self):
         """Test 'tag' argument type.
@@ -65,8 +73,24 @@ class ArgumentTypeTestCase(unittest.TestCase):
         Trying: invalid tag
         Expecting: ArgumentTypeError
         """
-        with self.assertRaises(argparse.ArgumentTypeError):
-            pusteblume.cli._tag(f"[{pusteblume.cli.RESERVED_CHARS}]")
+        with self.assertRaises(argparse.ArgumentTypeError) as exception:
+            string = "pusteblume"
+            pusteblume.cli._tag(string)
+            self.assertEqual(
+                str(exception),
+                pusteblume.errors.ERRORS["cli"]["invalid_tag"].format(
+                    string=string,
+                ),
+            )
+        with self.assertRaises(argparse.ArgumentTypeError) as exception:
+            pusteblume.cli._tag(f"[{pusteblume.cli._RESERVED_CHARS}]")
+            self.assertEqual(
+                str(exception),
+                pusteblume.errors.ERRORS["cli"]["reserved_chars"].format(
+                    string=pusteblume.cli._RESERVED_CHARS,
+                    reserved_chars=pusteblume.cli._RESERVED_CHARS,
+                )
+            )
 
 
 class SplitTestCase(unittest.TestCase):

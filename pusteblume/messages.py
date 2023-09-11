@@ -34,6 +34,7 @@ MESSAGES = {
     },
     "cli": {
         "help": {
+            "version": "print %(prog)s version",
             "list": "list tasks",
             "start": "start task",
             "stop": "stop task",
@@ -41,6 +42,7 @@ MESSAGES = {
             "name": "task name, e.g. 'debug command-line interface'",
             "tags": "tag(s), e.g. '[v1.2]'",
         },
+        "version": "%(prog)s {version}",
     },
 }
 COLOURS = {

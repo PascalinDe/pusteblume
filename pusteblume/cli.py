@@ -1,4 +1,4 @@
-#    Pusteblume v1.0
+#    Pusteblume v1.2
 #    Copyright (C) 2023  Carine Dengler
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -33,7 +33,7 @@ import pusteblume.messages
 from pusteblume import METADATA
 
 
-RESERVED_CHARS = "[]"
+_RESERVED_CHARS = "[]"
 
 
 def _name(string):
@@ -46,11 +46,11 @@ def _name(string):
     :returns: name
     :rtype: str
     """
-    if re.findall(rf"[{re.escape(RESERVED_CHARS)}]", string):
+    if matches := re.findall(rf"[{re.escape(_RESERVED_CHARS)}]", string):
         raise argparse.ArgumentTypeError(
             pusteblume.errors.ERRORS["cli"]["reserved_chars"].format(
                 string=string,
-                reserved_chars=RESERVED_CHARS,
+                reserved_chars="".join(dict.fromkeys(matches)),
             ),
         )
     return string
@@ -86,13 +86,16 @@ def split(argv):
     args = [argv[0]]  # argumentless subcommand
     sep = ""
     for split in re.split(
-        rf"([{re.escape(RESERVED_CHARS)}])",
+        rf"([{re.escape(_RESERVED_CHARS)}])",
         " ".join(argv[1:]),
     ):
         split = split.strip()
         if not split:
             continue
-        if split in RESERVED_CHARS:
+        if split in _RESERVED_CHARS:
+            if len(args) == 1:
+                args.append(split)
+                continue
             if split == "[":
                 sep = split
             if split == "]":
@@ -116,8 +119,10 @@ def init_argument_parser():
     parser.add_argument(
         "--version",
         action="version",
-        version=f"%(prog)s {METADATA['version']}",
-        help="print %(prog)s version",
+        version=pusteblume.messages.MESSAGES["cli"]["version"].format(
+            version=METADATA["version"],
+        ),
+        help=pusteblume.messages.MESSAGES["cli"]["help"]["version"],
     )
     _init_subparsers(parser)
     return parser
