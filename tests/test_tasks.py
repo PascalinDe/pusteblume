@@ -39,19 +39,9 @@ class TaskTestCase(unittest.TestCase):
 
     def setUp(self):
         """Set up task test case."""
-        name = "write test cases"
-        tags = ("pusteblume", "v1.2")
-        start_time = datetime.datetime.now()
-        self.running_task = pusteblume.tasks.Task(
-            name,
-            tags,
-            (start_time, None),
-        )
-        self.stopped_task = pusteblume.tasks.Task(
-            name,
-            tags,
-            (start_time, start_time + datetime.timedelta(minutes=5)),
-        )
+        self.name = "write test cases"
+        self.tags = ("pusteblume", "v1.2")
+        self.start_time = datetime.datetime.now()
 
     def test_running_task_runtime(self):
         """Test runtime.
@@ -59,7 +49,12 @@ class TaskTestCase(unittest.TestCase):
         Trying: running task runtime
         Expecting: runtime of < 1 second
         """
-        self.assertTrue(self.running_task.runtime < 1)
+        task = pusteblume.tasks.Task(
+            self.name,
+            self.tags,
+            (self.start_time, None),
+        )
+        self.assertTrue(task.runtime < 1)
 
     def test_stopped_task_runtime(self):
         """Test runtime.
@@ -67,7 +62,12 @@ class TaskTestCase(unittest.TestCase):
         Trying: stopped task runtime
         Expecting: runtime of >= 300 seconds
         """
-        self.assertTrue(self.stopped_task.runtime >= 300)
+        task = pusteblume.tasks.Task(
+            self.name,
+            self.tags,
+            (self.start_time, self.start_time + datetime.timedelta(minutes=5)),
+        )
+        self.assertTrue(task.runtime >= 300)
 
 
 class TasksTestCase(BaseTestCase):
@@ -139,22 +139,21 @@ class TasksTestCase(BaseTestCase):
             ],
         )
 
-    def test_query_related_tags(self):
-        """Test querying related tags.
+    def test_get_related_tags(self):
+        """Test getting related tags.
 
-        Trying: query related tags of task without tags
+        Trying: getting related tags
         Expecting: related tags or empty list if there are none
         """
         for tags in ((), self.tags):
             task_id = self._insert_task(self.name, tags, self.start_time, None)
             self.assertListEqual(
-                pusteblume.tasks._query_related_tags(self.config, task_id),
+                pusteblume.tasks._get_related_tags(self.config, task_id),
                 list(tags),
             )
 
-    def test_query_currently_running_task_no_running_task(self):
-        """Test querying currently running task.
-
+    def test_get_currently_running_task_no_running_task(self):
+        """Test getting currently running task.
 
         Trying: no running task
         Expecting: empty tuple
@@ -165,10 +164,10 @@ class TasksTestCase(BaseTestCase):
             self.start_time,
             datetime.datetime.now(),
         )
-        self.assertFalse(pusteblume.tasks._query_currently_running_task(self.config))
+        self.assertFalse(pusteblume.tasks._get_currently_running_task(self.config))
 
-    def test_query_currently_running_task_running_task(self):
-        """Test querying currently running task.
+    def test_get_currently_running_task_running_task(self):
+        """Test getting currently running task.
 
         Trying: running task
         Expecting: running task
@@ -180,7 +179,7 @@ class TasksTestCase(BaseTestCase):
             None,
         )
         self.assertEqual(
-            pusteblume.tasks._query_currently_running_task(self.config)[0][0],
+            pusteblume.tasks._get_currently_running_task(self.config)[0][0],
             task_id,
         )
 

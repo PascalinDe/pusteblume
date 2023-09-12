@@ -1,4 +1,4 @@
-#    Pusteblume v1.0
+#    Pusteblume v1.2
 #    Copyright (C) 2023  Carine Dengler
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -46,10 +46,8 @@ class Task(_Task):
         :returns: runtime
         :rtype: int
         """
-        if not self.time_range[1]:
-            delta = datetime.datetime.now() - self.time_range[0]
-        else:
-            delta = self.time_range[1] - self.time_range[0]
+        end_time = self.time_range[1] or datetime.datetime.now()
+        delta = end_time - self.time_range[0]
         if delta.days >= 1:
             return delta.seconds + delta.days * (24 * 60 * 60)
         return delta.seconds
@@ -73,7 +71,7 @@ class Task(_Task):
         :returns: pretty-printed short form
         :rtype: str
         """
-        return f"{pusteblume.messages.colour_string(self.name, fg='green')} {self.pprinted_tags}"  # noqa
+        return f"{pusteblume.messages.colour_string(self.name, fg='green')} {self.pprinted_tags}"  # noqa: E501
 
     @property
     def pprinted_time_range(self):
@@ -135,7 +133,7 @@ class Task(_Task):
         :returns: pretty-printed long form
         :rtype: str
         """
-        return f"{self.pprinted_time_range}{self.pprinted_runtime} {self.pprinted_short}"  # noqa
+        return f"{self.pprinted_time_range}{self.pprinted_runtime} {self.pprinted_short}"  # noqa: E501
 
 
 def _connect(config):
@@ -211,8 +209,8 @@ def init_database(config):
         )
 
 
-def _query_related_tags(config, task_id):
-    """Query related tags.
+def _get_related_tags(config, task_id):
+    """Get related tags.
 
     :param configparser.ConfigParser config: configuration
     :param int task_id: task ID
@@ -221,8 +219,8 @@ def _query_related_tags(config, task_id):
     :rtype: list
     """
     return [
-        row[0]
-        for row in _execute(
+        name
+        for (name,) in _execute(
             config,
             """SELECT tag.name
             FROM tag JOIN added_to ON tag.id = added_to.tag_id
@@ -232,30 +230,18 @@ def _query_related_tags(config, task_id):
     ]
 
 
-def list(config):
-    """List tasks.
+def _get_currently_running_task(config):
+    """Get currently running task.
 
     :param configparser.ConfigParser config: configuration
 
-    :returns: output
-    :rtype: str
+    :returns: currently running task
+    :rtype: tuple
     """
-    rows = _execute(
+    return _execute(
         config,
-        "SELECT id,name,start_time,end_time FROM task",
+        "SELECT id,name,start_time FROM task WHERE end_time IS NULL",
     )
-    if not rows:
-        return ""
-    tasks = []
-    for task_id, name, start_time, end_time in rows:
-        tasks.append(
-            Task(
-                name,
-                _query_related_tags(config, task_id),
-                (start_time, end_time),
-            ),
-        )
-    return os.linesep.join(task.pprinted_long for task in tasks)
 
 
 def start(config, name=None, tags=tuple()):
@@ -299,20 +285,6 @@ def start(config, name=None, tags=tuple()):
     )
 
 
-def _query_currently_running_task(config):
-    """Query currently running task.
-
-    :param configparser.ConfigParser config: configuration
-
-    :returns: currently running task
-    :rtype: tuple
-    """
-    return _execute(
-        config,
-        "SELECT id,name,start_time FROM task WHERE end_time IS NULL",
-    )
-
-
 def stop(config):
     """Stop task.
 
@@ -321,7 +293,7 @@ def stop(config):
     :returns: output
     :rtype: str
     """
-    rows = _query_currently_running_task(config)
+    rows = _get_currently_running_task(config)
     if not rows:
         return pusteblume.messages.MESSAGES["tasks"]["no_running_task"]
     end_time = datetime.datetime.now()
@@ -330,12 +302,38 @@ def stop(config):
         [
             Task(
                 name,
-                _query_related_tags(config, task_id),
+                _get_related_tags(config, task_id),
                 (start_time, end_time),
             ).pprinted_medium
             for (task_id, name, start_time) in rows
         ]
     )
+
+
+def list(config):
+    """List tasks.
+
+    :param configparser.ConfigParser config: configuration
+
+    :returns: output
+    :rtype: str
+    """
+    rows = _execute(
+        config,
+        "SELECT id,name,start_time,end_time FROM task",
+    )
+    if not rows:
+        return ""
+    tasks = []
+    for task_id, name, start_time, end_time in rows:
+        tasks.append(
+            Task(
+                name,
+                _get_related_tags(config, task_id),
+                (start_time, end_time),
+            ),
+        )
+    return os.linesep.join(task.pprinted_long for task in tasks)
 
 
 def status(config):
@@ -346,12 +344,12 @@ def status(config):
     :returns: output
     :rtype: str
     """
-    rows = _query_currently_running_task(config)
+    rows = _get_currently_running_task(config)
     if not rows:
         return pusteblume.messages.MESSAGES["tasks"]["no_running_task"]
     (task_id, name, start_time) = rows[0]
     return Task(
         name,
-        _query_related_tags(config, task_id),
+        _get_related_tags(config, task_id),
         (start_time, None),
     ).pprinted_short
