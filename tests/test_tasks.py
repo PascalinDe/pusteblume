@@ -322,7 +322,7 @@ class TasksTestCase(BaseTestCase):
         for task in (running_task, stopped_task):
             self._insert_task(task.name, task.tags, *task.time_range)
         self.assertEqual(
-            pusteblume.tasks.list(self.config),
+            pusteblume.tasks.list_(self.config),
             os.linesep.join(
                 task.pprinted_long for task in (running_task, stopped_task)
             ),

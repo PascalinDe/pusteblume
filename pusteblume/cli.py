@@ -137,7 +137,7 @@ def _init_subparsers(parser):
         "list": {
             "help": "list tasks",
             "arguments": {},
-            "func": pusteblume.tasks.list,
+            "func": pusteblume.tasks.list_,
         },
         "start": {
             "help": pusteblume.messages.MESSAGES["cli"]["help"]["start"],

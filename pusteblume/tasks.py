@@ -310,7 +310,7 @@ def stop(config):
     )
 
 
-def list(config):
+def list_(config):
     """List tasks.
 
     :param configparser.ConfigParser config: configuration
