@@ -59,7 +59,9 @@ class Task(_Task):
         :returns: pretty-printed tags
         :rtype: str
         """
-        return pusteblume.messages.colour_string(
+        if not self.tags:
+            return ""
+        return " " + pusteblume.messages.colour_string(
             "".join(f"[{tag}]" for tag in self.tags),
             fg="bright_black",
         )
@@ -71,7 +73,7 @@ class Task(_Task):
         :returns: pretty-printed short form
         :rtype: str
         """
-        return f"{pusteblume.messages.colour_string(self.name, fg='green')} {self.pprinted_tags}"  # noqa: E501
+        return f"{pusteblume.messages.colour_string(self.name, fg='green')}{self.pprinted_tags}"    # noqa: E501
 
     @property
     def pprinted_time_range(self):
