@@ -25,6 +25,8 @@ import os
 import datetime
 import unittest
 
+from unittest.mock import patch
+
 # third party imports
 
 # library specific imports
@@ -75,10 +77,10 @@ class TasksTestCase(BaseTestCase):
 
     def setUp(self):
         """Set up task tracking and management tools test case."""
+        pusteblume.tasks.init_database(self.config)
         self.name = "write test cases"
         self.tags = ("pusteblume", "v1.2")
         self.start_time = datetime.datetime.now()
-        pusteblume.tasks.init_database(self.config)
 
     def tearDown(self):
         """Tear down task tracking and management tools test case."""
@@ -360,4 +362,81 @@ class TasksTestCase(BaseTestCase):
         self.assertEqual(
             pusteblume.tasks.status(self.config),
             task.pprinted_short,
+        )
+
+    def test_edit_no_task(self):
+        """Test editing non-existing task.
+
+        Trying: non-existing task
+        Expecting: error message
+        """
+        self.assertEqual(
+            pusteblume.tasks.edit(self.config, name=self.name, tags=self.tags),
+            pusteblume.messages.MESSAGES["tasks"]["edit"]["no_task"].format(
+                task=pusteblume.tasks.Task(
+                    self.name,
+                    self.tags,
+                    (None, None),
+                ).pprinted_short,
+            ),
+        )
+
+    @patch(
+        "pusteblume.tasks._input",
+        side_effect=(
+            "1",
+            "write more test cases",
+        ),
+    )
+    def test_edit_name(self, mock_input):
+        """Test editing name.
+
+        Trying: editing name
+        Expecting: name has been edited
+        """
+        task_id = self._insert_task(
+            self.name,
+            (),
+            self.start_time,
+            None,
+        )
+        pusteblume.tasks.edit(self.config, self.name)
+        self.assertEqual(
+            pusteblume.tasks._execute(
+                self.config,
+                "SELECT name FROM task WHERE id = ?",
+                (task_id,),
+            ),
+            [("write more test cases",)],
+        )
+
+    @patch(
+        "pusteblume.tasks._input",
+        side_effect=(
+            "2",
+            "[pusteblume][v1.2][unit tests]",
+        ),
+    )
+    def test_edit_tags(self, mock_input):
+        """Test editing tags.
+
+        Trying: editing tags
+        Expecting: tags have been edited
+        """
+        task_id = self._insert_task(
+            self.name,
+            (),
+            self.start_time,
+            None,
+        )
+        pusteblume.tasks.edit(self.config, self.name)
+        self.assertEqual(
+            pusteblume.tasks._execute(
+                self.config,
+                """SELECT tag.name
+                FROM tag JOIN added_to ON tag.id = added_to.tag_id
+                WHERE added_to.task_id = ?""",
+                (task_id,),
+            ),
+            [("pusteblume",), ("v1.2",), ("unit tests",)],
         )

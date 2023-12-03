@@ -28,6 +28,14 @@
 MESSAGES = {
     "tasks": {
         "no_running_task": "no running task",
+        "edit": {
+            "task": "Editing task '{task}'...",
+            "tasks": "Which task do you want to edit?",
+            "no_task": "'{task}' does not exist",
+            "attribute": "Which attribute do you want to edit?",
+            "new_attr": "What is the new value of {attribute}?",
+            "new_value": "The new value of {attribute} is {value}",
+        },
     },
     "config": {
         "default": "generated default configuration file {config_file}",
@@ -39,6 +47,7 @@ MESSAGES = {
             "start": "start task",
             "stop": "stop task",
             "status": "show currently running task if any",
+            "edit": "edit task",
             "name": "task name, e.g. 'debug command-line interface'",
             "tags": "tag(s), e.g. '[v1.2]'",
         },

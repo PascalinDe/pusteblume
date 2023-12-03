@@ -28,6 +28,7 @@ import collections
 
 # third party imports
 # library specific imports
+import pusteblume.cli
 import pusteblume.messages
 
 
@@ -246,6 +247,66 @@ def _get_currently_running_task(config):
     )
 
 
+def _get_task(config, name, tags):
+    """Get task by name and (if applicable) tags.
+
+    :param configparser.ConfigParser config: configuration
+    :param str name: name
+    :param tuple tags: tags
+
+    :returns: task(s)
+    :rtype: generator
+    """
+    for task_id, start_time, end_time in _execute(
+            config,
+            "SELECT id,start_time,end_time FROM task WHERE name = ?",
+            (name,),
+    ):
+        if _get_related_tags(config, task_id) == tags:
+            yield (
+                task_id,
+                Task(
+                    name,
+                    tags,
+                    (start_time, end_time),
+                ),
+            )
+        else:
+            yield (task_id, Task(name, (), (start_time, end_time)))
+
+
+def _input(prompt):
+    """Wrapper around built-in input function."""
+    return input(prompt)
+
+
+def _insert_tag(config, tag, task_id):
+    """Insert tag.
+
+    :param configparser.ConfigParser config: configuration
+    :param str tag: tag
+    :param int task_id: task ID
+    """
+    rows = _execute(
+        config,
+        "SELECT id FROM tag WHERE name = ?",
+        (tag,),
+    )
+    if not rows:
+        ((tag_id,),) = _execute(
+            config,
+            "INSERT INTO tag(name) VALUES(?) RETURNING id",
+            (tag,),
+        )
+    else:
+        ((tag_id,),) = rows
+    _execute(
+        config,
+        "INSERT INTO added_to(task_id,tag_id) VALUES(?,?)",
+        (task_id, tag_id),
+    )
+
+
 def start(config, name=None, tags=tuple()):
     """Start task.
 
@@ -264,24 +325,7 @@ def start(config, name=None, tags=tuple()):
         (name, start_time),
     )
     for tag in tags:
-        rows = _execute(
-            config,
-            "SELECT id FROM tag WHERE name = ?",
-            (tag,),
-        )
-        if not rows:
-            ((tag_id,),) = _execute(
-                config,
-                "INSERT INTO tag(name) VALUES(?) RETURNING id",
-                (tag,),
-            )
-        else:
-            ((tag_id,),) = rows
-        _execute(
-            config,
-            "INSERT INTO added_to(task_id,tag_id) VALUES(?,?)",
-            (task_id, tag_id),
-        )
+        _insert_tag(config, tag, task_id)
     return os.linesep.join(
         (output, Task(name, tags, (start_time, None)).pprinted_short)
     )
@@ -355,3 +399,96 @@ def status(config):
         _get_related_tags(config, task_id),
         (start_time, None),
     ).pprinted_short
+
+
+def _select(config, prompt, choices):
+    """Let the user choose from a list.
+
+    :param configparser.ConfigParser config: configuration
+    :param str prompt: prompt
+    :param list choices: choices
+
+    :returns: choice
+    :rtype: int
+    """
+    return pusteblume.cli.parse_input(
+        _input(
+            os.linesep.join(
+                (
+                    prompt,
+                    *(
+                        f"{i}. {choice}"
+                        for (i, choice) in enumerate(choices, start=1)
+                    ),
+                ),
+            ),
+        ),
+        "choice",
+        choices=[str(i) for i in range(1, len(choices) + 1)],
+    ).choice
+
+
+def edit(config, name=None, tags=tuple()):
+    """Edit task.
+
+    :param configparser.ConfigParser config: configuration
+    :param str name: task name
+    :param tuple tags: tag(s)
+
+    :returns: output
+    :rtype: str
+    """
+    tasks = list(_get_task(config, name, tags))
+    if not tasks:
+        return pusteblume.messages.MESSAGES["tasks"]["edit"]["no_task"].format(
+            task=Task(name, tags, (None, None)).pprinted_short,
+        )
+    if len(tasks) > 1:
+        task_id, task = tasks[
+            _select(
+                config,
+                pusteblume.messages.MESSAGES["tasks"]["edit"]["tasks"],
+                (task.pprinted_medium for _, task in tasks),
+            ) - 1
+        ]
+    else:
+        task_id, task = tasks[0]
+    print(
+        pusteblume.messages.MESSAGES["tasks"]["edit"]["task"].format(
+            task=task.pprinted_medium,
+        )
+    )
+    attrs = {
+        "name": pusteblume.cli.name,
+        "tag": pusteblume.cli.tag,
+    }
+    attr = list(attrs.keys())[
+        int(
+            _select(
+                config,
+                pusteblume.messages.MESSAGES["tasks"]["edit"]["attribute"],
+                list(attrs.keys()),
+            )
+        ) - 1
+    ]
+    new_value = _input(
+        pusteblume.messages.MESSAGES["tasks"]["edit"]["new_attr"].format(
+            attribute=attr,
+        ),
+    )
+    parsed_input = pusteblume.cli.parse_input(new_value, attr)
+    if attr == "name":
+        _execute(
+            config,
+            f"UPDATE task SET {attr} = ? WHERE id = ?",
+            (parsed_input.name, task_id),
+        )
+    if attr == "tag":
+        for tag in parsed_input.tag:
+            _insert_tag(config, tag, task_id)
+    print(
+        pusteblume.messages.MESSAGES["tasks"]["edit"]["new_value"].format(
+            attribute=attr,
+            value=new_value,
+        ),
+    )

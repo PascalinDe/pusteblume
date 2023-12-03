@@ -135,3 +135,16 @@ class SplitTestCase(unittest.TestCase):
         """
         args = ["status"]
         self.assertListEqual(pusteblume.cli.split(args), args)
+
+    def test_edit(self):
+        """Test splitting 'edit' subcommand.
+
+        Trying: split 'edit' subcommand
+        Expecting: 'edit' subcommand and its command-line arguments
+        """
+        args = ["edit", "write test cases"]
+        # name
+        self.assertListEqual(pusteblume.cli.split(args), args)
+        # name and tags
+        args = [*args, "[pusteblume]", "[v1.2]"]
+        self.assertListEqual(pusteblume.cli.split(args), args)

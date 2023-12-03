@@ -36,7 +36,7 @@ from pusteblume import METADATA
 _RESERVED_CHARS = "[]"
 
 
-def _name(string):
+def name(string):
     """Assert string matches 'name' pattern.
 
     :param str string: string
@@ -56,7 +56,7 @@ def _name(string):
     return string
 
 
-def _tag(string):
+def tag(string):
     """Assert string matches 'tag' pattern.
 
     :param str string: string
@@ -67,7 +67,7 @@ def _tag(string):
     :rtype: str
     """
     if match := re.match(r"\[(.+?)\]", string):
-        return _name(match.group(1))
+        return name(match.group(1))
     raise argparse.ArgumentTypeError(
         pusteblume.errors.ERRORS["cli"]["invalid_tag"].format(string=string),
     )
@@ -104,6 +104,42 @@ def split(argv):
         args.append(sep + split)
         sep = ""
     return args
+
+
+def parse_input(input_, type_, choices=()):
+    """Parse input.
+
+    :param str input_: input
+    :param str type_: type
+    :param list choices: choices
+
+    :returns: parsed input
+    :rtype: argparse.Namespace
+    """
+    parser = argparse.ArgumentParser(
+        prog="",
+        add_help=False,
+    )
+    if type_ == "name":
+        parser.add_argument(
+            type_,
+            type=name,
+        )
+        input_ = [input_]
+    if type_ == "tag":
+        parser.add_argument(
+            type_,
+            nargs="*",
+            type=tag,
+        )
+        input_ = [tag + "]" for tag in input_.split("]") if tag]
+    if type_ == "choice":
+        parser.add_argument(
+            type_,
+            choices=choices,
+        )
+        input_ = [input_]
+    return parser.parse_args(input_)
 
 
 def init_argument_parser():
@@ -143,12 +179,12 @@ def _init_subparsers(parser):
             "help": pusteblume.messages.MESSAGES["cli"]["help"]["start"],
             "arguments": {
                 "name": {
-                    "type": _name,
+                    "type": name,
                     "help": pusteblume.messages.MESSAGES["cli"]["help"]["name"],
                 },
                 "tags": {
                     "nargs": "*",
-                    "type": _tag,
+                    "type": tag,
                     "help": pusteblume.messages.MESSAGES["cli"]["help"]["tags"],
                 },
             },
@@ -163,6 +199,21 @@ def _init_subparsers(parser):
             "help": pusteblume.messages.MESSAGES["cli"]["help"]["status"],
             "arguments": {},
             "func": pusteblume.tasks.status,
+        },
+        "edit": {
+            "help": pusteblume.messages.MESSAGES["cli"]["help"]["edit"],
+            "arguments": {
+                "name": {
+                    "type": name,
+                    "help": pusteblume.messages.MESSAGES["cli"]["help"]["name"],
+                },
+                "tags": {
+                    "nargs": "*",
+                    "type": tag,
+                    "help": pusteblume.messages.MESSAGES["cli"]["help"]["tags"],
+                },
+            },
+            "func": pusteblume.tasks.edit,
         },
     }
     subparsers = parser.add_subparsers()
