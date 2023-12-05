@@ -40,7 +40,7 @@ class ArgumentTypeTestCase(unittest.TestCase):
         Expecting: name
         """
         name = "write test cases"
-        self.assertEqual(pusteblume.cli._name(name), name)
+        self.assertEqual(pusteblume.cli.name(name), name)
 
     def test_invalid_name(self):
         """Test 'name' argument type.
@@ -49,7 +49,7 @@ class ArgumentTypeTestCase(unittest.TestCase):
         Expecting: ArgumentTypeError
         """
         with self.assertRaises(argparse.ArgumentTypeError) as exception:
-            pusteblume.cli._name(pusteblume.cli._RESERVED_CHARS)
+            pusteblume.cli.name(pusteblume.cli._RESERVED_CHARS)
             self.assertEqual(
                 str(exception),
                 pusteblume.errors.ERRORS["cli"]["reserved_chars"].format(
@@ -65,7 +65,7 @@ class ArgumentTypeTestCase(unittest.TestCase):
         Expecting: tag
         """
         tag = "pusteblume"
-        self.assertEqual(pusteblume.cli._tag(f"[{tag}]"), tag)
+        self.assertEqual(pusteblume.cli.tag(f"[{tag}]"), tag)
 
     def test_invalid_tag(self):
         """Test 'tag' argument type.
@@ -75,7 +75,7 @@ class ArgumentTypeTestCase(unittest.TestCase):
         """
         with self.assertRaises(argparse.ArgumentTypeError) as exception:
             string = "pusteblume"
-            pusteblume.cli._tag(string)
+            pusteblume.cli.tag(string)
             self.assertEqual(
                 str(exception),
                 pusteblume.errors.ERRORS["cli"]["invalid_tag"].format(
@@ -83,7 +83,7 @@ class ArgumentTypeTestCase(unittest.TestCase):
                 ),
             )
         with self.assertRaises(argparse.ArgumentTypeError) as exception:
-            pusteblume.cli._tag(f"[{pusteblume.cli._RESERVED_CHARS}]")
+            pusteblume.cli.tag(f"[{pusteblume.cli._RESERVED_CHARS}]")
             self.assertEqual(
                 str(exception),
                 pusteblume.errors.ERRORS["cli"]["reserved_chars"].format(
