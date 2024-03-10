@@ -1,5 +1,5 @@
-#    Pusteblume v1.0
-#    Copyright (C) 2023  Carine Dengler
+#    Pusteblume v1.2
+#    Copyright (C) 2024  Carine Dengler
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -27,7 +27,7 @@
 
 METADATA = {
     "name": "pusteblume",
-    "version": "v1.1",
+    "version": "v1.2",
     "description": "Light-weight time tracking tool.",
     "author": "Carine Dengler",
     "author_email": "pusteblume@pascalin.de",
