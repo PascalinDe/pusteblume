@@ -32,7 +32,6 @@ import pusteblume.messages
 
 from pusteblume import METADATA
 
-
 _RESERVED_CHARS = "[]"
 
 

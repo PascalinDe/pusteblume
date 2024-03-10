@@ -30,7 +30,6 @@ import configparser
 import pusteblume.errors
 import pusteblume.messages
 
-
 _HOME_PATH = pathlib.Path(os.environ["HOME"])
 _DATABASE_NAME = "pusteblume.db"
 _DATABASE_PATH = _HOME_PATH / ".local" / "share"

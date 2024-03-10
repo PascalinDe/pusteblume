@@ -31,7 +31,6 @@ import collections
 import pusteblume.cli
 import pusteblume.messages
 
-
 _Task = collections.namedtuple("Task", ("name", "tags", "time_range"))
 
 
