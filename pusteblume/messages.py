@@ -93,10 +93,4 @@ def colour_string(string, style=None, fg=None, bg=None):
     :returns: coloured string
     :rtype: str
     """
-    style = STYLES.get(style, "")
-    fg = COLOURS["fg"].get(fg, "")
-    bg = COLOURS["bg"].get(bg, "")
-    ansi_escape_codes = ";".join(
-        str(escape_code) for escape_code in (style, fg, bg) if escape_code
-    )
-    return f"\033[{ansi_escape_codes}m{string}\033[m"
+    return f"\033[{';'.join(str(escape_code) for escape_code in (STYLES.get(style, ''), COLOURS['fg'].get(fg, ''), COLOURS['bg'].get(bg, '')) if escape_code)}m{string}\033[m"  # noqa: E501
