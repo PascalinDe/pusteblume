@@ -25,6 +25,7 @@
 # library specific imports
 
 
+PROMPT = "> "
 MESSAGES = {
     "tasks": {
         "no_running_task": "no running task",

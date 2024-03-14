@@ -276,7 +276,7 @@ def _get_task(config, name, tags):
 
 def _input(prompt):
     """Wrapper around built-in input function."""
-    return input(prompt)
+    return input(f"{prompt}{os.linesep}{pusteblume.messages.PROMPT}")
 
 
 def _insert_tag(config, tag, task_id):
