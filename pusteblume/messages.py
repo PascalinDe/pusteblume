@@ -28,14 +28,15 @@
 PROMPT = "> "
 MESSAGES = {
     "tasks": {
-        "no_running_task": "no running task",
+        "stop": {
+            "no_task": "no running task",
+        },
         "edit": {
-            "task": "Editing task '{task}'...",
-            "tasks": "Which task do you want to edit?",
-            "no_task": "'{task}' does not exist",
-            "attribute": "Which attribute do you want to edit?",
-            "new_attr": "What is the new value of {attribute}?",
-            "new_value": "The new value of {attribute} is {value}",
+            "single_matching_task": "editing '{task}' …",
+            "multiple_matching_tasks": "choose task to edit: …",
+            "no_matching_task": "no task '{task}'",
+            "attribute": "choose attribute to edit: …",
+            "value": "new value of {attribute}: …",
         },
     },
     "config": {

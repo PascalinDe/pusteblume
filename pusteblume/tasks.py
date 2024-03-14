@@ -340,7 +340,7 @@ def stop(config):
     """
     rows = _get_currently_running_task(config)
     if not rows:
-        return pusteblume.messages.MESSAGES["tasks"]["no_running_task"]
+        return pusteblume.messages.MESSAGES["tasks"]["stop"]["no_task"]
     end_time = datetime.datetime.now()
     _execute(config, "UPDATE task SET end_time = ? WHERE end_time IS NULL", (end_time,))
     return os.linesep.join(
@@ -391,7 +391,7 @@ def status(config):
     """
     rows = _get_currently_running_task(config)
     if not rows:
-        return pusteblume.messages.MESSAGES["tasks"]["no_running_task"]
+        return pusteblume.messages.MESSAGES["tasks"]["stop"]["no_task"]
     (task_id, name, start_time) = rows[0]
     return Task(
         name,
@@ -439,21 +439,21 @@ def edit(config, name=None, tags=tuple()):
     """
     tasks = list(_get_task(config, name, tags))
     if not tasks:
-        return pusteblume.messages.MESSAGES["tasks"]["edit"]["no_task"].format(
+        return pusteblume.messages.MESSAGES["tasks"]["edit"]["no_matching_task"].format(
             task=Task(name, tags, (None, None)).pprinted_short,
         )
     if len(tasks) > 1:
         task_id, task = tasks[
             _select(
                 config,
-                pusteblume.messages.MESSAGES["tasks"]["edit"]["tasks"],
+                pusteblume.messages.MESSAGES["tasks"]["edit"]["multiple_matching_tasks"],
                 (task.pprinted_medium for _, task in tasks),
             ) - 1
         ]
     else:
         task_id, task = tasks[0]
     print(
-        pusteblume.messages.MESSAGES["tasks"]["edit"]["task"].format(
+        pusteblume.messages.MESSAGES["tasks"]["edit"]["single_matching_task"].format(
             task=task.pprinted_medium,
         )
     )
@@ -471,7 +471,7 @@ def edit(config, name=None, tags=tuple()):
         ) - 1
     ]
     new_value = _input(
-        pusteblume.messages.MESSAGES["tasks"]["edit"]["new_attr"].format(
+        pusteblume.messages.MESSAGES["tasks"]["edit"]["value"].format(
             attribute=attr,
         ),
     )
@@ -482,12 +482,8 @@ def edit(config, name=None, tags=tuple()):
             f"UPDATE task SET {attr} = ? WHERE id = ?",
             (parsed_input.name, task_id),
         )
+        print(Task(parsed_input.name, tags, (None, None)).pprinted_short)
     if attr == "tag":
         for tag in parsed_input.tag:
             _insert_tag(config, tag, task_id)
-    print(
-        pusteblume.messages.MESSAGES["tasks"]["edit"]["new_value"].format(
-            attribute=attr,
-            value=new_value,
-        ),
-    )
+        print(Task(name, parsed_input.tag, (None, None)).pprinted_short)
