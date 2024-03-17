@@ -52,7 +52,7 @@ def generate_default_config():
     with CONFIG_FILE.open("w") as fp:
         default_config.write(fp)
     print(
-        pusteblume.messages.MESSAGES["config"]["default"].format(
+        pusteblume.messages.MESSAGES["config"]["generate_default_config"].format(
             config_file=CONFIG_FILE,
         )
     )

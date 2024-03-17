@@ -40,7 +40,7 @@ MESSAGES = {
         },
     },
     "config": {
-        "default": "generated default configuration file {config_file}",
+        "generate_default_config": "generated default configuration file {config_file}",
     },
     "cli": {
         "help": {
