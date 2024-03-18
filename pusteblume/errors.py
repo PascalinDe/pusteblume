@@ -39,9 +39,3 @@ ERRORS = {
         "invalid_tag": "'{string}' is not a valid tag",
     },
 }
-
-
-class InvalidConfig(Exception):
-    """Raised when configuration file is invalid."""
-
-    pass

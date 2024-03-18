@@ -41,6 +41,12 @@ CONFIG_SECTIONS = {
 }
 
 
+class InvalidConfig(Exception):
+    """Raised when configuration file is invalid."""
+
+    pass
+
+
 def generate_default_config():
     """Generate default configuration file."""
     ((section, keys),) = CONFIG_SECTIONS.items()
@@ -83,7 +89,7 @@ def validate_config(config):
                         ),
                     )
     if errors:
-        raise pusteblume.errors.InvalidConfig(
+        raise InvalidConfig(
             os.linesep.join(
                 (
                     pusteblume.errors.ERRORS["config"]["errors"].format(
