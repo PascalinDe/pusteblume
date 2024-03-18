@@ -44,14 +44,16 @@ MESSAGES = {
     },
     "cli": {
         "help": {
-            "version": "print %(prog)s version",
+            "version": "output version information",
             "list": "list tasks",
             "start": "start task",
             "stop": "stop task",
-            "status": "show currently running task if any",
+            "status": "output running task",
             "edit": "edit task",
-            "name": "task name, e.g. 'debug command-line interface'",
-            "tags": "tag(s), e.g. '[v1.2]'",
+            "arguments": {
+                "name": "name, e.g. 'debug user interface'",
+                "tags": "tags, e.g. '[pusteblume][v1.3]'",
+            }
         },
         "version": "%(prog)s {version}",
     },

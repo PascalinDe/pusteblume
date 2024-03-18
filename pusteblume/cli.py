@@ -179,12 +179,12 @@ def _init_subparsers(parser):
             "arguments": {
                 "name": {
                     "type": name,
-                    "help": pusteblume.messages.MESSAGES["cli"]["help"]["name"],
+                    "help": pusteblume.messages.MESSAGES["cli"]["help"]["arguments"]["name"],
                 },
                 "tags": {
                     "nargs": "*",
                     "type": tag,
-                    "help": pusteblume.messages.MESSAGES["cli"]["help"]["tags"],
+                    "help": pusteblume.messages.MESSAGES["cli"]["help"]["arguments"]["tags"],
                 },
             },
             "func": pusteblume.tasks.start,
@@ -204,12 +204,12 @@ def _init_subparsers(parser):
             "arguments": {
                 "name": {
                     "type": name,
-                    "help": pusteblume.messages.MESSAGES["cli"]["help"]["name"],
+                    "help": pusteblume.messages.MESSAGES["cli"]["help"]["arguments"]["name"],
                 },
                 "tags": {
                     "nargs": "*",
                     "type": tag,
-                    "help": pusteblume.messages.MESSAGES["cli"]["help"]["tags"],
+                    "help": pusteblume.messages.MESSAGES["cli"]["help"]["arguments"]["tags"],
                 },
             },
             "func": pusteblume.tasks.edit,
