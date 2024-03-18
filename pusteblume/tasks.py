@@ -29,7 +29,7 @@ import collections
 # third party imports
 # library specific imports
 import pusteblume.cli
-import pusteblume.messages
+import pusteblume.output
 
 _Task = collections.namedtuple("Task", ("name", "tags", "time_range"))
 
@@ -61,7 +61,7 @@ class Task(_Task):
         """
         if not self.tags:
             return ""
-        return " " + pusteblume.messages.colour_string(
+        return " " + pusteblume.output.colour_string(
             "".join(f"[{tag}]" for tag in self.tags),
             fg="bright_black",
         )
@@ -73,7 +73,7 @@ class Task(_Task):
         :returns: pretty-printed short form
         :rtype: str
         """
-        return f"{pusteblume.messages.colour_string(self.name, fg='green')}{self.pprinted_tags}"    # noqa: E501
+        return f"{pusteblume.output.colour_string(self.name, fg='green')}{self.pprinted_tags}"    # noqa: E501
 
     @property
     def pprinted_time_range(self):
@@ -91,7 +91,7 @@ class Task(_Task):
             pprinted_start_time = start_time.strftime("%H:%M")
         else:
             pprinted_start_time = start_time.strftime("%H:%M %Y-%m-%d")
-        return pusteblume.messages.colour_string(
+        return pusteblume.output.colour_string(
             f"{pprinted_start_time}-{pprinted_end_time}",
             fg="magenta",
         )
@@ -104,9 +104,9 @@ class Task(_Task):
         :rtype: str
         """
         return (
-            pusteblume.messages.colour_string("(", fg="magenta")
+            pusteblume.output.colour_string("(", fg="magenta")
             + self.pprinted_time_range
-            + pusteblume.messages.colour_string(")", fg="magenta")
+            + pusteblume.output.colour_string(")", fg="magenta")
         )
 
     @property
@@ -126,7 +126,7 @@ class Task(_Task):
         :rtype: str
         """
         hours, minutes = divmod(divmod(self.runtime, 60)[0], 60)
-        return pusteblume.messages.colour_string(f"({hours}h{minutes}m)", fg="yellow")
+        return pusteblume.output.colour_string(f"({hours}h{minutes}m)", fg="yellow")
 
     @property
     def pprinted_long(self):
@@ -276,7 +276,7 @@ def _get_task(config, name, tags):
 
 def _input(prompt):
     """Wrapper around built-in input function."""
-    return input(f"{prompt}{os.linesep}{pusteblume.messages.PROMPT}")
+    return input(f"{prompt}{os.linesep}{pusteblume.output.PROMPT}")
 
 
 def _insert_tag(config, tag, task_id):
@@ -340,7 +340,7 @@ def stop(config):
     """
     rows = _get_currently_running_task(config)
     if not rows:
-        return pusteblume.messages.MESSAGES["tasks"]["stop"]["no_task"]
+        return pusteblume.output.MESSAGES["tasks"]["stop"]["no_task"]
     end_time = datetime.datetime.now()
     _execute(config, "UPDATE task SET end_time = ? WHERE end_time IS NULL", (end_time,))
     return os.linesep.join(
@@ -391,7 +391,7 @@ def status(config):
     """
     rows = _get_currently_running_task(config)
     if not rows:
-        return pusteblume.messages.MESSAGES["tasks"]["stop"]["no_task"]
+        return pusteblume.output.MESSAGES["tasks"]["stop"]["no_task"]
     (task_id, name, start_time) = rows[0]
     return Task(
         name,
@@ -439,21 +439,21 @@ def edit(config, name=None, tags=tuple()):
     """
     tasks = list(_get_task(config, name, tags))
     if not tasks:
-        return pusteblume.messages.MESSAGES["tasks"]["edit"]["no_matching_task"].format(
+        return pusteblume.output.MESSAGES["tasks"]["edit"]["no_matching_task"].format(
             task=Task(name, tags, (None, None)).pprinted_short,
         )
     if len(tasks) > 1:
         task_id, task = tasks[
             _select(
                 config,
-                pusteblume.messages.MESSAGES["tasks"]["edit"]["multiple_matching_tasks"],
+                pusteblume.output.MESSAGES["tasks"]["edit"]["multiple_matching_tasks"],
                 (task.pprinted_medium for _, task in tasks),
             ) - 1
         ]
     else:
         task_id, task = tasks[0]
     print(
-        pusteblume.messages.MESSAGES["tasks"]["edit"]["single_matching_task"].format(
+        pusteblume.output.MESSAGES["tasks"]["edit"]["single_matching_task"].format(
             task=task.pprinted_medium,
         )
     )
@@ -465,13 +465,13 @@ def edit(config, name=None, tags=tuple()):
         int(
             _select(
                 config,
-                pusteblume.messages.MESSAGES["tasks"]["edit"]["attribute"],
+                pusteblume.output.MESSAGES["tasks"]["edit"]["attribute"],
                 list(attrs.keys()),
             )
         ) - 1
     ]
     new_value = _input(
-        pusteblume.messages.MESSAGES["tasks"]["edit"]["value"].format(
+        pusteblume.output.MESSAGES["tasks"]["edit"]["value"].format(
             attribute=attr,
         ),
     )
