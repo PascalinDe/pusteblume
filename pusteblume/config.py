@@ -27,7 +27,6 @@ import configparser
 
 # third party imports
 # library specific imports
-import pusteblume.errors
 import pusteblume.messages
 
 _HOME_PATH = pathlib.Path(os.environ["HOME"])
@@ -75,7 +74,7 @@ def validate_config(config):
     for section in CONFIG_SECTIONS:
         if section not in config.sections():
             errors.append(
-                pusteblume.errors.ERRORS["config"]["missing_section"].format(
+                pusteblume.messages.ERRORS["config"]["missing_section"].format(
                     section=section,
                 )
             )
@@ -83,7 +82,7 @@ def validate_config(config):
             for key in CONFIG_SECTIONS[section]:
                 if key not in config[section]:
                     errors.append(
-                        pusteblume.errors.ERRORS["config"]["missing_key"].format(
+                        pusteblume.messages.ERRORS["config"]["missing_key"].format(
                             key=key,
                             section=section,
                         ),
@@ -92,7 +91,7 @@ def validate_config(config):
         raise InvalidConfig(
             os.linesep.join(
                 (
-                    pusteblume.errors.ERRORS["config"]["errors"].format(
+                    pusteblume.messages.ERRORS["config"]["errors"].format(
                         config_file=CONFIG_FILE,
                     ),
                     *errors,

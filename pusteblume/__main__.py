@@ -28,6 +28,7 @@ import logging
 # library specific imports
 import pusteblume.cli
 import pusteblume.tasks
+import pusteblume.messages
 
 from pusteblume.config import load_config
 
@@ -49,7 +50,7 @@ def main():
     except Exception as exception:
         logging.getLogger(main.__name__).exception(exception)
         print(
-            pusteblume.errors.ERRORS["main"]["failed_subcommand"].format(
+            pusteblume.messages.ERRORS["main"]["failed_subcommand"].format(
                 subcommand=sys.argv[1],
             )
         )

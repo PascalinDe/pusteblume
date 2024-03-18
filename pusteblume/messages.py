@@ -58,6 +58,20 @@ MESSAGES = {
         "version": "%(prog)s {version}",
     },
 }
+ERRORS = {
+    "main": {
+        "failed_subcommand": "subcommand '{subcommand}' failed",
+    },
+    "config": {
+        "missing_section": "required section '{section}' missing",
+        "missing_key": "required key '{key}' in section '{section}' missing",
+        "errors": "configuration file {config_file} contains errors",
+    },
+    "cli": {
+        "reserved_chars": "'{string}' contains reserved characters '{reserved_chars}'",
+        "invalid_tag": "'{string}' is not a valid tag",
+    },
+}
 COLOURS = {
     "fg": {
         "black": 30,

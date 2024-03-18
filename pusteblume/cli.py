@@ -27,7 +27,6 @@ import argparse
 # third party imports
 # library specific imports
 import pusteblume.tasks
-import pusteblume.errors
 import pusteblume.messages
 
 from pusteblume import METADATA
@@ -47,7 +46,7 @@ def name(string):
     """
     if matches := re.findall(rf"[{re.escape(_RESERVED_CHARS)}]", string):
         raise argparse.ArgumentTypeError(
-            pusteblume.errors.ERRORS["cli"]["reserved_chars"].format(
+            pusteblume.messages.ERRORS["cli"]["reserved_chars"].format(
                 string=string,
                 reserved_chars="".join(dict.fromkeys(matches)),
             ),
@@ -68,7 +67,7 @@ def tag(string):
     if match := re.match(r"\[(.+?)\]", string):
         return name(match.group(1))
     raise argparse.ArgumentTypeError(
-        pusteblume.errors.ERRORS["cli"]["invalid_tag"].format(string=string),
+        pusteblume.messages.ERRORS["cli"]["invalid_tag"].format(string=string),
     )
 
 
