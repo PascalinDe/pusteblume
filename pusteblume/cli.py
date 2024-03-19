@@ -46,7 +46,7 @@ def name(string):
     """
     if matches := re.findall(rf"[{re.escape(_RESERVED_CHARS)}]", string):
         raise argparse.ArgumentTypeError(
-            pusteblume.output.ERRORS["cli"]["reserved_chars"].format(
+            pusteblume.output.OUTPUT["cli"]["errors"]["reserved_chars"].format(
                 string=string,
                 reserved_chars="".join(dict.fromkeys(matches)),
             ),
@@ -67,7 +67,7 @@ def tag(string):
     if match := re.match(r"\[(.+?)\]", string):
         return name(match.group(1))
     raise argparse.ArgumentTypeError(
-        pusteblume.output.ERRORS["cli"]["invalid_tag"].format(string=string),
+        pusteblume.output.OUTPUT["cli"]["errors"]["invalid_tag"].format(string=string),
     )
 
 
@@ -153,10 +153,10 @@ def init_argument_parser():
     parser.add_argument(
         "--version",
         action="version",
-        version=pusteblume.output.MESSAGES["cli"]["version"].format(
+        version=pusteblume.output.OUTPUT["cli"]["messages"]["version"].format(
             version=METADATA["version"],
         ),
-        help=pusteblume.output.MESSAGES["cli"]["help"]["version"],
+        help=pusteblume.output.OUTPUT["cli"]["messages"]["help"]["version"],
     )
     _init_subparsers(parser)
     return parser
@@ -174,41 +174,49 @@ def _init_subparsers(parser):
             "func": pusteblume.tasks.list_,
         },
         "start": {
-            "help": pusteblume.output.MESSAGES["cli"]["help"]["start"],
+            "help": pusteblume.output.OUTPUT["cli"]["messages"]["help"]["start"],
             "arguments": {
                 "name": {
                     "type": name,
-                    "help": pusteblume.output.MESSAGES["cli"]["help"]["arguments"]["name"],
+                    "help": pusteblume.output.OUTPUT["cli"]["messages"]["help"][
+                        "arguments"
+                    ]["name"],
                 },
                 "tags": {
                     "nargs": "*",
                     "type": tag,
-                    "help": pusteblume.output.MESSAGES["cli"]["help"]["arguments"]["tags"],
+                    "help": pusteblume.output.OUTPUT["cli"]["messages"]["help"][
+                        "arguments"
+                    ]["tags"],
                 },
             },
             "func": pusteblume.tasks.start,
         },
         "stop": {
-            "help": pusteblume.output.MESSAGES["cli"]["help"]["stop"],
+            "help": pusteblume.output.OUTPUT["cli"]["messages"]["help"]["stop"],
             "arguments": {},
             "func": pusteblume.tasks.stop,
         },
         "status": {
-            "help": pusteblume.output.MESSAGES["cli"]["help"]["status"],
+            "help": pusteblume.output.OUTPUT["cli"]["messages"]["help"]["status"],
             "arguments": {},
             "func": pusteblume.tasks.status,
         },
         "edit": {
-            "help": pusteblume.output.MESSAGES["cli"]["help"]["edit"],
+            "help": pusteblume.output.OUTPUT["cli"]["messages"]["help"]["edit"],
             "arguments": {
                 "name": {
                     "type": name,
-                    "help": pusteblume.output.MESSAGES["cli"]["help"]["arguments"]["name"],
+                    "help": pusteblume.output.OUTPUT["cli"]["messages"]["help"][
+                        "arguments"
+                    ]["name"],
                 },
                 "tags": {
                     "nargs": "*",
                     "type": tag,
-                    "help": pusteblume.output.MESSAGES["cli"]["help"]["arguments"]["tags"],
+                    "help": pusteblume.output.OUTPUT["cli"]["messages"]["help"][
+                        "arguments"
+                    ]["tags"],
                 },
             },
             "func": pusteblume.tasks.edit,

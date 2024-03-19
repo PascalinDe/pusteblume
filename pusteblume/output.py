@@ -27,6 +27,27 @@
 
 PROMPT = "> "
 OUTPUT = {
+    "cli": {
+        "messages": {
+            "help": {
+                "version": "output version information",
+                "list": "list tasks",
+                "start": "start task",
+                "stop": "stop task",
+                "status": "output running task",
+                "edit": "edit task",
+                "arguments": {
+                    "name": "name, e.g. 'debug user interface'",
+                    "tags": "tags, e.g. '[pusteblume][v1.3]'",
+                },
+            },
+            "version": "%(prog)s {version}",
+        },
+        "errors": {
+            "reserved_chars": "'{string}' contains reserved characters '{reserved_chars}'",
+            "invalid_tag": "'{string}' is not a valid tag",
+        },
+    },
     "main": {
         "messages": {},
         "errors": {
@@ -53,31 +74,12 @@ MESSAGES = {
     "config": {
         "generate_default_config": "generated default configuration file {config_file}",
     },
-    "cli": {
-        "help": {
-            "version": "output version information",
-            "list": "list tasks",
-            "start": "start task",
-            "stop": "stop task",
-            "status": "output running task",
-            "edit": "edit task",
-            "arguments": {
-                "name": "name, e.g. 'debug user interface'",
-                "tags": "tags, e.g. '[pusteblume][v1.3]'",
-            }
-        },
-        "version": "%(prog)s {version}",
-    },
 }
 ERRORS = {
     "config": {
         "missing_section": "required section '{section}' missing",
         "missing_key": "required key '{key}' in section '{section}' missing",
         "errors": "configuration file {config_file} contains errors",
-    },
-    "cli": {
-        "reserved_chars": "'{string}' contains reserved characters '{reserved_chars}'",
-        "invalid_tag": "'{string}' is not a valid tag",
     },
 }
 COLOURS = {
