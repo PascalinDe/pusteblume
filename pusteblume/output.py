@@ -44,13 +44,13 @@ OUTPUT = {
             "version": "%(prog)s {version}",
         },
         "errors": {
-            "reserved_chars": "'{string}' contains reserved characters '{reserved_chars}'",
+            "reserved_chars": "'{string}' contains reserved characters '{reserved_chars}'",     # noqa: E501
             "invalid_tag": "'{string}' is not a valid tag",
         },
     },
     "config": {
         "messages": {
-            "generate_default_config": "generated default configuration file {config_file}",
+            "generate_default_config": "generated default configuration file {config_file}",    # noqa: E501
         },
         "errors": {
             "missing_section": "required section '{section}' missing",

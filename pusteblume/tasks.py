@@ -439,21 +439,21 @@ def edit(config, name=None, tags=tuple()):
     """
     tasks = list(_get_task(config, name, tags))
     if not tasks:
-        return pusteblume.output.OUTPUT["tasks"]["messages"]["edit"]["no_matching_task"].format(
+        return pusteblume.output.OUTPUT["tasks"]["messages"]["edit"]["no_matching_task"].format(    # noqa: E501
             task=Task(name, tags, (None, None)).pprinted_short,
         )
     if len(tasks) > 1:
         task_id, task = tasks[
             _select(
                 config,
-                pusteblume.output.OUTPUT["tasks"]["messages"]["edit"]["multiple_matching_tasks"],
+                pusteblume.output.OUTPUT["tasks"]["messages"]["edit"]["multiple_matching_tasks"],   # noqa: E501
                 (task.pprinted_medium for _, task in tasks),
             ) - 1
         ]
     else:
         task_id, task = tasks[0]
     print(
-        pusteblume.output.OUTPUT["tasks"]["messages"]["edit"]["single_matching_task"].format(
+        pusteblume.output.OUTPUT["tasks"]["messages"]["edit"]["single_matching_task"].format(   # noqa: E501
             task=task.pprinted_medium,
         )
     )
