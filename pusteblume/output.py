@@ -48,6 +48,16 @@ OUTPUT = {
             "invalid_tag": "'{string}' is not a valid tag",
         },
     },
+    "config": {
+        "messages": {
+            "generate_default_config": "generated default configuration file {config_file}",
+        },
+        "errors": {
+            "missing_section": "required section '{section}' missing",
+            "missing_key": "required key '{key}' in section '{section}' missing",
+            "errors": "configuration file {config_file} contains errors",
+        },
+    },
     "main": {
         "messages": {},
         "errors": {
@@ -68,18 +78,6 @@ OUTPUT = {
             },
         },
         "errors": {},
-    },
-}
-MESSAGES = {
-    "config": {
-        "generate_default_config": "generated default configuration file {config_file}",
-    },
-}
-ERRORS = {
-    "config": {
-        "missing_section": "required section '{section}' missing",
-        "missing_key": "required key '{key}' in section '{section}' missing",
-        "errors": "configuration file {config_file} contains errors",
     },
 }
 COLOURS = {
