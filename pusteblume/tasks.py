@@ -340,7 +340,7 @@ def stop(config):
     """
     rows = _get_currently_running_task(config)
     if not rows:
-        return pusteblume.output.MESSAGES["tasks"]["stop"]["no_task"]
+        return pusteblume.output.OUTPUT["tasks"]["messages"]["stop"]["no_task"]
     end_time = datetime.datetime.now()
     _execute(config, "UPDATE task SET end_time = ? WHERE end_time IS NULL", (end_time,))
     return os.linesep.join(
@@ -391,7 +391,7 @@ def status(config):
     """
     rows = _get_currently_running_task(config)
     if not rows:
-        return pusteblume.output.MESSAGES["tasks"]["stop"]["no_task"]
+        return pusteblume.output.OUTPUT["tasks"]["messages"]["stop"]["no_task"]
     (task_id, name, start_time) = rows[0]
     return Task(
         name,
@@ -439,21 +439,21 @@ def edit(config, name=None, tags=tuple()):
     """
     tasks = list(_get_task(config, name, tags))
     if not tasks:
-        return pusteblume.output.MESSAGES["tasks"]["edit"]["no_matching_task"].format(
+        return pusteblume.output.OUTPUT["tasks"]["messages"]["edit"]["no_matching_task"].format(
             task=Task(name, tags, (None, None)).pprinted_short,
         )
     if len(tasks) > 1:
         task_id, task = tasks[
             _select(
                 config,
-                pusteblume.output.MESSAGES["tasks"]["edit"]["multiple_matching_tasks"],
+                pusteblume.output.OUTPUT["tasks"]["messages"]["edit"]["multiple_matching_tasks"],
                 (task.pprinted_medium for _, task in tasks),
             ) - 1
         ]
     else:
         task_id, task = tasks[0]
     print(
-        pusteblume.output.MESSAGES["tasks"]["edit"]["single_matching_task"].format(
+        pusteblume.output.OUTPUT["tasks"]["messages"]["edit"]["single_matching_task"].format(
             task=task.pprinted_medium,
         )
     )
@@ -465,13 +465,13 @@ def edit(config, name=None, tags=tuple()):
         int(
             _select(
                 config,
-                pusteblume.output.MESSAGES["tasks"]["edit"]["attribute"],
+                pusteblume.output.OUTPUT["tasks"]["messages"]["edit"]["attribute"],
                 list(attrs.keys()),
             )
         ) - 1
     ]
     new_value = _input(
-        pusteblume.output.MESSAGES["tasks"]["edit"]["value"].format(
+        pusteblume.output.OUTPUT["tasks"]["messages"]["edit"]["value"].format(
             attribute=attr,
         ),
     )

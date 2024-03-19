@@ -26,19 +26,24 @@
 
 
 PROMPT = "> "
-MESSAGES = {
+OUTPUT = {
     "tasks": {
-        "stop": {
-            "no_task": "no running task",
+        "messages": {
+            "stop": {
+                "no_task": "no running task",
+            },
+            "edit": {
+                "single_matching_task": "editing '{task}' …",
+                "multiple_matching_tasks": "choose task to edit: …",
+                "no_matching_task": "no task '{task}'",
+                "attribute": "choose attribute to edit: …",
+                "value": "new value of {attribute}: …",
+            },
         },
-        "edit": {
-            "single_matching_task": "editing '{task}' …",
-            "multiple_matching_tasks": "choose task to edit: …",
-            "no_matching_task": "no task '{task}'",
-            "attribute": "choose attribute to edit: …",
-            "value": "new value of {attribute}: …",
-        },
+        "errors": {},
     },
+}
+MESSAGES = {
     "config": {
         "generate_default_config": "generated default configuration file {config_file}",
     },
