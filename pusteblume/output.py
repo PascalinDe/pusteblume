@@ -16,7 +16,7 @@
 
 
 """
-:synopsis: Messages.
+:synopsis: Output and output formatting.
 """
 
 
