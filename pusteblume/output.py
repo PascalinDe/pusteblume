@@ -27,6 +27,12 @@
 
 PROMPT = "> "
 OUTPUT = {
+    "main": {
+        "messages": {},
+        "errors": {
+            "failed_subcommand": "subcommand '{subcommand}' failed",
+        },
+    },
     "tasks": {
         "messages": {
             "stop": {
@@ -64,9 +70,6 @@ MESSAGES = {
     },
 }
 ERRORS = {
-    "main": {
-        "failed_subcommand": "subcommand '{subcommand}' failed",
-    },
     "config": {
         "missing_section": "required section '{section}' missing",
         "missing_key": "required key '{key}' in section '{section}' missing",

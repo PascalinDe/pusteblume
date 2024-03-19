@@ -50,7 +50,7 @@ def main():
     except Exception as exception:
         logging.getLogger(main.__name__).exception(exception)
         print(
-            pusteblume.output.ERRORS["main"]["failed_subcommand"].format(
+            pusteblume.output.OUTPUT["main"]["errors"]["failed_subcommand"].format(
                 subcommand=sys.argv[1],
             )
         )
