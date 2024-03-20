@@ -26,60 +26,6 @@
 
 
 PROMPT = "> "
-OUTPUT = {
-    "cli": {
-        "messages": {
-            "help": {
-                "version": "output version information",
-                "list": "list tasks",
-                "start": "start task",
-                "stop": "stop task",
-                "status": "output running task",
-                "edit": "edit task",
-                "arguments": {
-                    "name": "name, e.g. 'debug user interface'",
-                    "tags": "tags, e.g. '[pusteblume][v1.3]'",
-                },
-            },
-            "version": "%(prog)s {version}",
-        },
-        "errors": {
-            "reserved_chars": "'{string}' contains reserved characters '{reserved_chars}'",     # noqa: E501
-            "invalid_tag": "'{string}' is not a valid tag",
-        },
-    },
-    "config": {
-        "messages": {
-            "generate_default_config": "generated default configuration file {config_file}",    # noqa: E501
-        },
-        "errors": {
-            "missing_section": "required section '{section}' missing",
-            "missing_key": "required key '{key}' in section '{section}' missing",
-            "errors": "configuration file {config_file} contains errors",
-        },
-    },
-    "main": {
-        "messages": {},
-        "errors": {
-            "failed_subcommand": "subcommand '{subcommand}' failed",
-        },
-    },
-    "tasks": {
-        "messages": {
-            "stop": {
-                "no_task": "no running task",
-            },
-            "edit": {
-                "single_matching_task": "editing '{task}' …",
-                "multiple_matching_tasks": "choose task to edit: …",
-                "no_matching_task": "no task '{task}'",
-                "attribute": "choose attribute to edit: …",
-                "value": "new value of {attribute}: …",
-            },
-        },
-        "errors": {},
-    },
-}
 COLOURS = {
     "fg": {
         "black": 30,

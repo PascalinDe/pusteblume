@@ -27,7 +27,6 @@ import configparser
 
 # third party imports
 # library specific imports
-import pusteblume.output
 
 _HOME_PATH = pathlib.Path(os.environ["HOME"])
 _DATABASE_NAME = "pusteblume.db"
@@ -56,13 +55,7 @@ def generate_default_config():
     }
     with CONFIG_FILE.open("w") as fp:
         default_config.write(fp)
-    print(
-        pusteblume.output.OUTPUT["config"]["messages"][
-            "generate_default_config"
-        ].format(
-            config_file=CONFIG_FILE,
-        )
-    )
+    print(f"generated default configuration file {CONFIG_FILE}")
 
 
 def validate_config(config):
@@ -75,32 +68,16 @@ def validate_config(config):
     errors = []
     for section in CONFIG_SECTIONS:
         if section not in config.sections():
-            errors.append(
-                pusteblume.output.OUTPUT["config"]["errors"]["missing_section"].format(
-                    section=section,
-                )
-            )
+            errors.append(f"required section '{section}' missing")
         else:
             for key in CONFIG_SECTIONS[section]:
                 if key not in config[section]:
                     errors.append(
-                        pusteblume.output.OUTPUT["config"]["errors"][
-                            "missing_key"
-                        ].format(
-                            key=key,
-                            section=section,
-                        ),
+                        f"required key '{key}' in section '{section}' missing"
                     )
     if errors:
         raise InvalidConfig(
-            os.linesep.join(
-                (
-                    pusteblume.output.OUTPUT["config"]["errors"]["errors"].format(
-                        config_file=CONFIG_FILE,
-                    ),
-                    *errors,
-                ),
-            ),
+            os.linesep.join(f"configuration file {CONFIG_FILE} contains errors"),
         )
 
 

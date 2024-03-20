@@ -46,10 +46,7 @@ def name(string):
     """
     if matches := re.findall(rf"[{re.escape(_RESERVED_CHARS)}]", string):
         raise argparse.ArgumentTypeError(
-            pusteblume.output.OUTPUT["cli"]["errors"]["reserved_chars"].format(
-                string=string,
-                reserved_chars="".join(dict.fromkeys(matches)),
-            ),
+            f"'{string}' contains reserved characters '{''.join(dict.fromkeys(matches))}'"  # noqa: E501
         )
     return string
 
@@ -66,9 +63,7 @@ def tag(string):
     """
     if match := re.match(r"\[(.+?)\]", string):
         return name(match.group(1))
-    raise argparse.ArgumentTypeError(
-        pusteblume.output.OUTPUT["cli"]["errors"]["invalid_tag"].format(string=string),
-    )
+    raise argparse.ArgumentTypeError(f"'{string}' is not a valid tag")
 
 
 def split(argv):
@@ -153,10 +148,8 @@ def init_argument_parser():
     parser.add_argument(
         "--version",
         action="version",
-        version=pusteblume.output.OUTPUT["cli"]["messages"]["version"].format(
-            version=METADATA["version"],
-        ),
-        help=pusteblume.output.OUTPUT["cli"]["messages"]["help"]["version"],
+        version="%(prog)s {version}",
+        help="output version information",
     )
     _init_subparsers(parser)
     return parser
@@ -174,49 +167,41 @@ def _init_subparsers(parser):
             "func": pusteblume.tasks.list_,
         },
         "start": {
-            "help": pusteblume.output.OUTPUT["cli"]["messages"]["help"]["start"],
+            "help": "start task",
             "arguments": {
                 "name": {
                     "type": name,
-                    "help": pusteblume.output.OUTPUT["cli"]["messages"]["help"][
-                        "arguments"
-                    ]["name"],
+                    "help": "name, e.g. 'debug user interface'",
                 },
                 "tags": {
                     "nargs": "*",
                     "type": tag,
-                    "help": pusteblume.output.OUTPUT["cli"]["messages"]["help"][
-                        "arguments"
-                    ]["tags"],
+                    "help": "tags, e.g. '[pusteblume][v1.3]'",
                 },
             },
             "func": pusteblume.tasks.start,
         },
         "stop": {
-            "help": pusteblume.output.OUTPUT["cli"]["messages"]["help"]["stop"],
+            "help": "stop task",
             "arguments": {},
             "func": pusteblume.tasks.stop,
         },
         "status": {
-            "help": pusteblume.output.OUTPUT["cli"]["messages"]["help"]["status"],
+            "help": "output running task",
             "arguments": {},
             "func": pusteblume.tasks.status,
         },
         "edit": {
-            "help": pusteblume.output.OUTPUT["cli"]["messages"]["help"]["edit"],
+            "help": "edit task",
             "arguments": {
                 "name": {
                     "type": name,
-                    "help": pusteblume.output.OUTPUT["cli"]["messages"]["help"][
-                        "arguments"
-                    ]["name"],
+                    "help": "name, e.g. 'debug user interface'",
                 },
                 "tags": {
                     "nargs": "*",
                     "type": tag,
-                    "help": pusteblume.output.OUTPUT["cli"]["messages"]["help"][
-                        "arguments"
-                    ]["tags"],
+                    "help": "tags, e.g. '[pusteblume][v1.3]'",
                 },
             },
             "func": pusteblume.tasks.edit,

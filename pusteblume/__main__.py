@@ -49,9 +49,5 @@ def main():
         )
     except Exception as exception:
         logging.getLogger(main.__name__).exception(exception)
-        print(
-            pusteblume.output.OUTPUT["main"]["errors"]["failed_subcommand"].format(
-                subcommand=sys.argv[1],
-            )
-        )
+        print(f"subcommand '{sys.argv[1]}' failed")
         raise SystemExit

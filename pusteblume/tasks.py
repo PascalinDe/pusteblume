@@ -340,7 +340,7 @@ def stop(config):
     """
     rows = _get_currently_running_task(config)
     if not rows:
-        return pusteblume.output.OUTPUT["tasks"]["messages"]["stop"]["no_task"]
+        return "no running task"
     end_time = datetime.datetime.now()
     _execute(config, "UPDATE task SET end_time = ? WHERE end_time IS NULL", (end_time,))
     return os.linesep.join(
@@ -391,7 +391,7 @@ def status(config):
     """
     rows = _get_currently_running_task(config)
     if not rows:
-        return pusteblume.output.OUTPUT["tasks"]["messages"]["stop"]["no_task"]
+        return "no running task"
     (task_id, name, start_time) = rows[0]
     return Task(
         name,
@@ -439,24 +439,18 @@ def edit(config, name=None, tags=tuple()):
     """
     tasks = list(_get_task(config, name, tags))
     if not tasks:
-        return pusteblume.output.OUTPUT["tasks"]["messages"]["edit"]["no_matching_task"].format(    # noqa: E501
-            task=Task(name, tags, (None, None)).pprinted_short,
-        )
+        return "no task '{task}'"
     if len(tasks) > 1:
         task_id, task = tasks[
             _select(
                 config,
-                pusteblume.output.OUTPUT["tasks"]["messages"]["edit"]["multiple_matching_tasks"],   # noqa: E501
+                "choose task to edit: …",
                 (task.pprinted_medium for _, task in tasks),
             ) - 1
         ]
     else:
         task_id, task = tasks[0]
-    print(
-        pusteblume.output.OUTPUT["tasks"]["messages"]["edit"]["single_matching_task"].format(   # noqa: E501
-            task=task.pprinted_medium,
-        )
-    )
+    print(f"editing '{task.pprinted_medium}' …")
     attrs = {
         "name": pusteblume.cli.name,
         "tag": pusteblume.cli.tag,
@@ -465,16 +459,12 @@ def edit(config, name=None, tags=tuple()):
         int(
             _select(
                 config,
-                pusteblume.output.OUTPUT["tasks"]["messages"]["edit"]["attribute"],
+                "choose attribute to edit: …",
                 list(attrs.keys()),
             )
         ) - 1
     ]
-    new_value = _input(
-        pusteblume.output.OUTPUT["tasks"]["messages"]["edit"]["value"].format(
-            attribute=attr,
-        ),
-    )
+    new_value = _input(f"new value of {attr}: …")
     parsed_input = pusteblume.cli.parse_input(new_value, attr)
     if attr == "name":
         _execute(
