@@ -27,7 +27,6 @@ import unittest
 # third party imports
 # library specific imports
 import pusteblume.cli
-import pusteblume.errors
 
 
 class ArgumentTypeTestCase(unittest.TestCase):
@@ -52,10 +51,7 @@ class ArgumentTypeTestCase(unittest.TestCase):
             pusteblume.cli.name(pusteblume.cli._RESERVED_CHARS)
             self.assertEqual(
                 str(exception),
-                pusteblume.errors.ERRORS["cli"]["reserved_chars"].format(
-                    string=pusteblume.cli._RESERVED_CHARS,
-                    reserved_chars=pusteblume.cli._RESERVED_CHARS,
-                ),
+                f"'{pusteblume.cli._RESERVED_CHARS}' contains reserved characters'{pusteblume.cli._RESERVED_CHARS}'",   # noqa: E501
             )
 
     def test_valid_tag(self):
@@ -78,18 +74,13 @@ class ArgumentTypeTestCase(unittest.TestCase):
             pusteblume.cli.tag(string)
             self.assertEqual(
                 str(exception),
-                pusteblume.errors.ERRORS["cli"]["invalid_tag"].format(
-                    string=string,
-                ),
+                f"'{string}' is not a valid tag",
             )
         with self.assertRaises(argparse.ArgumentTypeError) as exception:
             pusteblume.cli.tag(f"[{pusteblume.cli._RESERVED_CHARS}]")
             self.assertEqual(
                 str(exception),
-                pusteblume.errors.ERRORS["cli"]["reserved_chars"].format(
-                    string=pusteblume.cli._RESERVED_CHARS,
-                    reserved_chars=pusteblume.cli._RESERVED_CHARS,
-                )
+                f"'{pusteblume.cli._RESERVED_CHARS}' contains reserved characters'{pusteblume.cli._RESERVED_CHARS}'",   # noqa: E501
             )
 
 

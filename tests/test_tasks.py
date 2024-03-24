@@ -31,7 +31,6 @@ from unittest.mock import patch
 
 # library specific imports
 import pusteblume.tasks
-import pusteblume.messages
 
 from tests import BaseTestCase
 
@@ -339,7 +338,7 @@ class TasksTestCase(BaseTestCase):
         """
         self.assertEqual(
             pusteblume.tasks.status(self.config),
-            pusteblume.messages.MESSAGES["tasks"]["no_running_task"],
+            "no running task",
         )
 
     def test_status_running_task(self):
@@ -372,13 +371,7 @@ class TasksTestCase(BaseTestCase):
         """
         self.assertEqual(
             pusteblume.tasks.edit(self.config, name=self.name, tags=self.tags),
-            pusteblume.messages.MESSAGES["tasks"]["edit"]["no_task"].format(
-                task=pusteblume.tasks.Task(
-                    self.name,
-                    self.tags,
-                    (None, None),
-                ).pprinted_short,
-            ),
+            f"no task '{pusteblume.tasks.Task(self.name, self.tags, (None, None)).pprinted_short}'",     # noqa: E501
         )
 
     @patch(
