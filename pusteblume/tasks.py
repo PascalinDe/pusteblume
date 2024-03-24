@@ -437,7 +437,7 @@ def edit(config, name=None, tags=tuple()):
     """
     tasks = list(_get_task(config, name, tags))
     if not tasks:
-        return "no task '{task}'"
+        return f"no task '{Task(name, tags, (None, None)).pprinted_short}'"
     if len(tasks) > 1:
         task_id, task = tasks[
             _select(
