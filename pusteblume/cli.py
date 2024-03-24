@@ -129,6 +129,7 @@ def parse_input(input_, type_, choices=()):
     if type_ == "choice":
         parser.add_argument(
             type_,
+            type=int,
             choices=choices,
         )
         input_ = [input_]

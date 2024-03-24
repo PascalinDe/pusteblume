@@ -363,22 +363,19 @@ def list_(config):
     :returns: output
     :rtype: str
     """
-    rows = _execute(
-        config,
-        "SELECT id,name,start_time,end_time FROM task",
-    )
-    if not rows:
-        return ""
-    tasks = []
-    for task_id, name, start_time, end_time in rows:
-        tasks.append(
+    return os.linesep.join(
+        [
             Task(
                 name,
                 _get_related_tags(config, task_id),
                 (start_time, end_time),
-            ),
-        )
-    return os.linesep.join(task.pprinted_long for task in tasks)
+            ).pprinted_long
+            for (task_id, name, start_time, end_time) in _execute(
+                config,
+                "SELECT id,name,start_time,end_time FROM task",
+            )
+        ]
+    )
 
 
 def status(config):
@@ -410,6 +407,7 @@ def _select(config, prompt, choices):
     :returns: choice
     :rtype: int
     """
+    enum_choices = list(enumerate(choices, start=1))
     return pusteblume.cli.parse_input(
         _input(
             os.linesep.join(
@@ -417,13 +415,13 @@ def _select(config, prompt, choices):
                     prompt,
                     *(
                         f"{i}. {choice}"
-                        for (i, choice) in enumerate(choices, start=1)
+                        for (i, choice) in enum_choices
                     ),
                 ),
             ),
         ),
         "choice",
-        choices=[str(i) for i in range(1, len(choices) + 1)],
+        choices=[i for i, _ in enum_choices],
     ).choice
 
 
@@ -451,19 +449,8 @@ def edit(config, name=None, tags=tuple()):
     else:
         task_id, task = tasks[0]
     print(f"editing '{task.pprinted_medium}' …")
-    attrs = {
-        "name": pusteblume.cli.name,
-        "tag": pusteblume.cli.tag,
-    }
-    attr = list(attrs.keys())[
-        int(
-            _select(
-                config,
-                "choose attribute to edit: …",
-                list(attrs.keys()),
-            )
-        ) - 1
-    ]
+    attrs = ["name", "tag"]
+    attr = attrs[_select(config, "choose attribute to edit: …", attrs) - 1]
     new_value = _input(f"new value of {attr}: …")
     parsed_input = pusteblume.cli.parse_input(new_value, attr)
     if attr == "name":
