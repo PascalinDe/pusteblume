@@ -41,12 +41,11 @@ def main():
     argument_parser = pusteblume.cli.init_argument_parser()
     args = argument_parser.parse_args(pusteblume.cli.split(sys.argv[1:]))
     try:
-        print(
-            args.func(
-                config,
-                **{k: v for k, v in vars(args).items() if k != "func"},
-            )
-        )
+        if output := args.func(
+            config,
+            **{k: v for k, v in vars(args).items() if k != "func"},
+        ):
+            print(output)
     except Exception as exception:
         logging.getLogger(main.__name__).exception(exception)
         print(f"subcommand '{sys.argv[1]}' failed")
