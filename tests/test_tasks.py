@@ -377,7 +377,7 @@ class TasksTestCase(BaseTestCase):
         """
         self.assertEqual(
             pusteblume.tasks.edit(self.config, name=self.name, tags=self.tags),
-            f"no task '{pusteblume.tasks.Task(self.name, self.tags, (None, None)).pprinted_short}'",     # noqa: E501
+            f"no task '{pusteblume.tasks.Task(self.name, self.tags, (None, None)).pprinted_short}'",  # noqa: E501
         )
 
     @patch(
@@ -424,14 +424,22 @@ class TasksTestCase(BaseTestCase):
         """
         task_id = self._insert_task(
             self.name,
-            ("pusteblume", "v1.2", "test cases",),
+            (
+                "pusteblume",
+                "v1.2",
+                "test cases",
+            ),
             self.start_time,
             None,
         )
         pusteblume.tasks.edit(
             self.config,
             self.name,
-            ("pusteblume", "v1.2", "test cases",),
+            (
+                "pusteblume",
+                "v1.2",
+                "test cases",
+            ),
         )
         self.assertEqual(
             pusteblume.tasks._execute(

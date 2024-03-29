@@ -51,7 +51,7 @@ class ArgumentTypeTestCase(unittest.TestCase):
             pusteblume.cli.name(pusteblume.cli._RESERVED_CHARS)
             self.assertEqual(
                 str(exception),
-                f"'{pusteblume.cli._RESERVED_CHARS}' contains reserved characters'{pusteblume.cli._RESERVED_CHARS}'",   # noqa: E501
+                f"'{pusteblume.cli._RESERVED_CHARS}' contains reserved characters'{pusteblume.cli._RESERVED_CHARS}'",  # noqa: E501
             )
 
     def test_valid_tag(self):
@@ -80,7 +80,7 @@ class ArgumentTypeTestCase(unittest.TestCase):
             pusteblume.cli.tag(f"[{pusteblume.cli._RESERVED_CHARS}]")
             self.assertEqual(
                 str(exception),
-                f"'{pusteblume.cli._RESERVED_CHARS}' contains reserved characters'{pusteblume.cli._RESERVED_CHARS}'",   # noqa: E501
+                f"'{pusteblume.cli._RESERVED_CHARS}' contains reserved characters'{pusteblume.cli._RESERVED_CHARS}'",  # noqa: E501
             )
 
 

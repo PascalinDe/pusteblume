@@ -73,7 +73,7 @@ class Task(_Task):
         :returns: pretty-printed short form
         :rtype: str
         """
-        return f"{pusteblume.output.colour_string(self.name, fg='green')}{self.pprinted_tags}"    # noqa: E501
+        return f"{pusteblume.output.colour_string(self.name, fg='green')}{self.pprinted_tags}"  # noqa: E501
 
     @property
     def pprinted_time_range(self):
@@ -254,9 +254,9 @@ def _get_task(config, name, tags):
     :rtype: generator
     """
     for task_id, start_time, end_time in _execute(
-            config,
-            "SELECT id,start_time,end_time FROM task WHERE name = ?",
-            (name,),
+        config,
+        "SELECT id,start_time,end_time FROM task WHERE name = ?",
+        (name,),
     ):
         if tuple(name for (name, _) in _get_related_tags(config, task_id)) == tags:
             yield (
@@ -410,10 +410,7 @@ def _select(config, prompt, choices):
             os.linesep.join(
                 (
                     prompt,
-                    *(
-                        f"{i}. {choice}"
-                        for (i, choice) in enum_choices
-                    ),
+                    *(f"{i}. {choice}" for (i, choice) in enum_choices),
                 ),
             ),
         ),
@@ -441,7 +438,8 @@ def edit(config, name=None, tags=tuple()):
                 config,
                 "choose task to edit: …",
                 (task.pprinted_medium for _, task in tasks),
-            ) - 1
+            )
+            - 1
         ]
     else:
         task_id, task = tasks[0]
@@ -458,7 +456,7 @@ def edit(config, name=None, tags=tuple()):
         )
         print(Task(parsed_input.name, tags, (None, None)).pprinted_short)
     if attr == "tag":
-        for (tag_name, tag_id) in _get_related_tags(config, task_id):
+        for tag_name, tag_id in _get_related_tags(config, task_id):
             if tag_name not in parsed_input.tag:
                 _execute(config, "DELETE FROM added_to WHERE tag_id = ?", (tag_id,))
         for tag in parsed_input.tag:
