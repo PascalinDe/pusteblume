@@ -424,11 +424,15 @@ class TasksTestCase(BaseTestCase):
         """
         task_id = self._insert_task(
             self.name,
-            ("test cases",),
+            ("pusteblume", "v1.2", "test cases",),
             self.start_time,
             None,
         )
-        pusteblume.tasks.edit(self.config, self.name, ("test cases",))
+        pusteblume.tasks.edit(
+            self.config,
+            self.name,
+            ("pusteblume", "v1.2", "test cases",),
+        )
         self.assertEqual(
             pusteblume.tasks._execute(
                 self.config,

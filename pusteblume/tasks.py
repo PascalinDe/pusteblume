@@ -462,5 +462,7 @@ def edit(config, name=None, tags=tuple()):
             if tag_name not in parsed_input.tag:
                 _execute(config, "DELETE FROM added_to WHERE tag_id = ?", (tag_id,))
         for tag in parsed_input.tag:
-            _insert_tag(config, tag, task_id)
+            if tag not in tags:
+                print(f"inserting '{tag}'")
+                _insert_tag(config, tag, task_id)
         print(Task(name, parsed_input.tag, (None, None)).pprinted_short)
