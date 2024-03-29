@@ -149,7 +149,13 @@ class TasksTestCase(BaseTestCase):
         for tags in ((), self.tags):
             task_id = self._insert_task(self.name, tags, self.start_time, None)
             self.assertListEqual(
-                pusteblume.tasks._get_related_tags(self.config, task_id),
+                [
+                    name
+                    for (name, _) in pusteblume.tasks._get_related_tags(
+                        self.config,
+                        task_id,
+                    )
+                ],
                 list(tags),
             )
 
@@ -418,11 +424,11 @@ class TasksTestCase(BaseTestCase):
         """
         task_id = self._insert_task(
             self.name,
-            (),
+            ("test cases",),
             self.start_time,
             None,
         )
-        pusteblume.tasks.edit(self.config, self.name)
+        pusteblume.tasks.edit(self.config, self.name, ("test cases",))
         self.assertEqual(
             pusteblume.tasks._execute(
                 self.config,

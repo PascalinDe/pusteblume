@@ -220,16 +220,13 @@ def _get_related_tags(config, task_id):
     :returns: related tags
     :rtype: list
     """
-    return [
-        name
-        for (name,) in _execute(
-            config,
-            """SELECT tag.name
-            FROM tag JOIN added_to ON tag.id = added_to.tag_id
-            WHERE added_to.task_id = ?""",
-            (task_id,),
-        )
-    ]
+    return _execute(
+        config,
+        """SELECT tag.name, tag.id
+        FROM tag JOIN added_to ON tag.id = added_to.tag_id
+        WHERE added_to.task_id = ?""",
+        (task_id,),
+    )
 
 
 def _get_currently_running_task(config):
@@ -261,7 +258,7 @@ def _get_task(config, name, tags):
             "SELECT id,start_time,end_time FROM task WHERE name = ?",
             (name,),
     ):
-        if _get_related_tags(config, task_id) == tags:
+        if [name for (name, _) in _get_related_tags(config, task_id)] == tags:
             yield (
                 task_id,
                 Task(
@@ -347,7 +344,7 @@ def stop(config):
         [
             Task(
                 name,
-                _get_related_tags(config, task_id),
+                [name for (name, _) in _get_related_tags(config, task_id)],
                 (start_time, end_time),
             ).pprinted_medium
             for (task_id, name, start_time) in rows
@@ -367,7 +364,7 @@ def list_(config):
         [
             Task(
                 name,
-                _get_related_tags(config, task_id),
+                [name for (name, _) in _get_related_tags(config, task_id)],
                 (start_time, end_time),
             ).pprinted_long
             for (task_id, name, start_time, end_time) in _execute(
@@ -392,7 +389,7 @@ def status(config):
     (task_id, name, start_time) = rows[0]
     return Task(
         name,
-        _get_related_tags(config, task_id),
+        [name for (name, _) in _get_related_tags(config, task_id)],
         (start_time, None),
     ).pprinted_short
 
@@ -461,6 +458,9 @@ def edit(config, name=None, tags=tuple()):
         )
         print(Task(parsed_input.name, tags, (None, None)).pprinted_short)
     if attr == "tag":
+        for (tag_name, tag_id) in _get_related_tags(config, task_id):
+            if tag_name not in parsed_input.tag:
+                _execute(config, "DELETE FROM added_to WHERE tag_id = ?", (tag_id,))
         for tag in parsed_input.tag:
             _insert_tag(config, tag, task_id)
         print(Task(name, parsed_input.tag, (None, None)).pprinted_short)
