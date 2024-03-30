@@ -176,6 +176,7 @@ def _init_subparsers(parser):
                 },
                 "tags": {
                     "nargs": "*",
+                    "default": "",
                     "type": tag,
                     "help": "tags, e.g. '[pusteblume][v1.3]'",
                 },
@@ -201,6 +202,7 @@ def _init_subparsers(parser):
                 },
                 "tags": {
                     "nargs": "*",
+                    "default": "",
                     "type": tag,
                     "help": "tags, e.g. '[pusteblume][v1.3]'",
                 },
@@ -212,6 +214,7 @@ def _init_subparsers(parser):
     for subcommand in subcommands:
         subparser = subparsers.add_parser(
             subcommand,
+            formatter_class=argparse.ArgumentDefaultsHelpFormatter,
             help=subcommands[subcommand]["help"],
         )
         subparser.set_defaults(func=subcommands[subcommand]["func"])
