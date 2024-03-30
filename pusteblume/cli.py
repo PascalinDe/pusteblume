@@ -145,6 +145,7 @@ def init_argument_parser():
     parser = argparse.ArgumentParser(
         prog=METADATA["name"],
         description=METADATA["description"],
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     parser.add_argument(
         "--version",
