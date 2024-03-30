@@ -258,7 +258,8 @@ def _get_task(config, name, tags):
         "SELECT id,start_time,end_time FROM task WHERE name = ?",
         (name,),
     ):
-        if tuple(name for (name, _) in _get_related_tags(config, task_id)) == tags:
+        related_tags = _get_related_tags(config, task_id)
+        if tuple(name for (name, _) in related_tags) == tags:
             yield (
                 task_id,
                 Task(
@@ -267,7 +268,7 @@ def _get_task(config, name, tags):
                     (start_time, end_time),
                 ),
             )
-        elif not tags:
+        elif not tags and not related_tags:
             yield (task_id, Task(name, (), (start_time, end_time)))
 
 
