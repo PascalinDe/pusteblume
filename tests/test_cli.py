@@ -22,6 +22,7 @@
 
 # standard library imports
 import argparse
+import datetime
 import unittest
 
 # third party imports
@@ -82,6 +83,38 @@ class ArgumentTypeTestCase(unittest.TestCase):
                 str(exception),
                 f"'{pusteblume.cli._RESERVED_CHARS}' contains reserved characters'{pusteblume.cli._RESERVED_CHARS}'",  # noqa: E501
             )
+
+    def test_valid_datetime(self):
+        """Test 'datetime' argument type.
+
+        Trying: valid datetime
+        Expecting: datetime
+        """
+        now = datetime.datetime.now()
+        monday = now - datetime.timedelta(days=now.weekday())
+        yesterday = now - datetime.timedelta(days=1)
+        for (string, expected) in (
+            ("all", datetime.datetime(datetime.MINYEAR, 1, 1, 0, 0)),
+            ("year", datetime.datetime(now.year, 1, 1, 0, 0)),
+            ("month", datetime.datetime(now.year, now.month, 1, 0, 0)),
+            ("week", datetime.datetime(monday.year, monday.month, monday.day, 0, 0)),
+            (
+                "yesterday",
+                datetime.datetime(yesterday.year, yesterday.month, yesterday.day, 0, 0),
+            ),
+            ("today", datetime.datetime(now.year, now.month, now.day, 0, 0)),
+        ):
+            self.assertEqual(pusteblume.cli.datetime_(f"@{string}"), expected)
+        expected = datetime.datetime(now.year, now.month, now.day, now.hour, now.minute)
+        for format_ in ("%Y-%m-%dT%H:%M", "%H:%M"):
+            self.assertEqual(
+                pusteblume.cli.datetime_(f"@{now.strftime(format_)}"),
+                expected,
+            )
+        self.assertEqual(
+            pusteblume.cli.datetime_(f"@{now.strftime('%Y-%m-%d')}"),
+            datetime.datetime(now.year, now.month, now.day, 0, 0),
+        )
 
 
 class SplitTestCase(unittest.TestCase):

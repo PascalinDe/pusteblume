@@ -23,6 +23,7 @@
 # standard library imports
 import re
 import argparse
+import datetime
 
 # third party imports
 # library specific imports
@@ -31,7 +32,7 @@ import pusteblume.output
 
 from pusteblume import METADATA
 
-_RESERVED_CHARS = "[]"
+_RESERVED_CHARS = "@[]"
 
 
 def name(string):
@@ -64,6 +65,63 @@ def tag(string):
     if match := re.match(r"\[(.+?)\]", string):
         return name(match.group(1))
     raise argparse.ArgumentTypeError(f"'{string}' is not a valid tag")
+
+
+def datetime_(string):
+    """Assert string matches 'datetime' pattern.
+
+    :param str string: string
+
+    :raises: argparse.ArgumentTypeError
+
+    :returns: datetime
+    :rtype: datetime.datetime
+    """
+    string = string[1:]
+    now = datetime.datetime.now()
+    if string == "all":
+        return datetime.datetime(datetime.MINYEAR, 1, 1, 0, 0)
+    if string == "year":
+        return datetime.datetime(now.year, 1, 1, 0, 0)
+    if string == "month":
+        return datetime.datetime(now.year, now.month, 1, 0, 0)
+    if string == "week":
+        monday = now - datetime.timedelta(days=now.weekday())
+        return datetime.datetime(monday.year, monday.month, monday.day, 0, 0)
+    if string == "yesterday":
+        yesterday = now - datetime.timedelta(days=1)
+        return datetime.datetime(yesterday.year, yesterday.month, yesterday.day, 0, 0)
+    if string == "today":
+        return datetime.datetime(now.year, now.month, now.day, 0, 0)
+    for format_ in ("%Y-%m-%dT%H:%M", "%Y-%m-%d", "%H:%M"):
+        try:
+            match = datetime.datetime.strptime(string, format_)
+        except ValueError:
+            continue
+        if format_ == "%Y-%m-%d":
+            return datetime.datetime(
+                match.year,
+                match.month,
+                match.day,
+                0,
+                0,
+            )
+        if format_ == "%H:%M":
+            return datetime.datetime(
+                now.year,
+                now.month,
+                now.day,
+                match.hour,
+                match.minute,
+            )
+        return datetime.datetime(
+            match.year,
+            match.month,
+            match.day,
+            match.hour,
+            match.minute,
+        )
+    raise argparse.ArgumentTypeError(f"'{string}' is not a valid datetime")
 
 
 def split(argv):
