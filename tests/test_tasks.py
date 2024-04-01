@@ -74,6 +74,8 @@ class TaskTestCase(unittest.TestCase):
 class TasksTestCase(BaseTestCase):
     """Task tracking and management tools test case."""
 
+    maxDiff = None
+
     def setUp(self):
         """Set up task tracking and management tools test case."""
         pusteblume.tasks.init_database(self.config)
@@ -307,33 +309,58 @@ class TasksTestCase(BaseTestCase):
     def test_list(self):
         """Test listing tasks.
 
-        Trying: 1 stopped and 1 running task
-        Expecting: 1 stopped and 1 running task
+        Trying: 6 stopped and 1 running task
+        Expecting: tasks in date/time range
         """
+        now = datetime.datetime.now()
+        monday = now - datetime.timedelta(days=now.weekday())
+        yesterday = now - datetime.timedelta(days=1)
+        expected = (
+            list(
+                pusteblume.tasks.Task(
+                    self.name,
+                    self.tags,
+                    (start_time, start_time + datetime.timedelta(minutes=1)),
+                )
+                for start_time in (
+                    datetime.datetime(now.year, now.month, now.day, 0, 1),
+                    datetime.datetime(
+                        yesterday.year,
+                        yesterday.month,
+                        yesterday.day,
+                        0,
+                        1,
+                    ),
+                    datetime.datetime(monday.year, monday.month, monday.day, 0, 1),
+                    datetime.datetime(now.year, now.month, 1, 0, 1),
+                    datetime.datetime(now.year, 1, 1, 0, 1),
+                    datetime.datetime(datetime.MINYEAR, 1, 1, 0, 1),
+                )
+            )
+        )
+        expected.sort(reverse=True)     # yesterday might be a Sunday
         running_task = pusteblume.tasks.Task(
             self.name,
             self.tags,
             (
-                self.start_time + datetime.timedelta(minutes=5),
+                self.start_time,
                 None,
             ),
         )
-        stopped_task = pusteblume.tasks.Task(
-            self.name,
-            self.tags,
-            (
-                self.start_time,
-                datetime.datetime.now(),
-            ),
-        )
-        for task in (running_task, stopped_task):
+        for task in (running_task, *expected):
             self._insert_task(task.name, task.tags, *task.time_range)
-        self.assertEqual(
-            pusteblume.tasks.list_(self.config),
-            os.linesep.join(
-                task.pprinted_long for task in (running_task, stopped_task)
-            ),
-        )
+        for i in range(len(expected)):
+            self.assertEqual(
+                pusteblume.tasks.list_(
+                    self.config,
+                    start=expected[i].time_range[0] - datetime.timedelta(minutes=1),
+                    end=now,
+                ),
+                os.linesep.join(
+                    task.pprinted_long
+                    for task in (running_task, *expected[:i + 1])
+                ),
+            )
 
     def test_status_no_running_task(self):
         """Test showing currently running task.

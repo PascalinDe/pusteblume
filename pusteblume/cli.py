@@ -93,6 +93,8 @@ def datetime_(string):
         return datetime.datetime(yesterday.year, yesterday.month, yesterday.day, 0, 0)
     if string == "today":
         return datetime.datetime(now.year, now.month, now.day, 0, 0)
+    if string == "now":
+        return datetime.datetime(now.year, now.month, now.day, now.hour, now.minute)
     for format_ in ("%Y-%m-%dT%H:%M", "%Y-%m-%d", "%H:%M"):
         try:
             match = datetime.datetime.strptime(string, format_)
@@ -124,6 +126,34 @@ def datetime_(string):
     raise argparse.ArgumentTypeError(f"'{string}' is not a valid datetime")
 
 
+def start(string):
+    """Assert string matches 'start' pattern.
+
+    :param str string: string
+
+    :raises: argparse.ArgumentTypeError
+
+    :returns: date
+    :rtype: datetime.datetime
+    """
+    if string == "@now":
+        raise argparse.ArgumentTypeError(f"'{string}' is not a valid datetime")
+
+
+def end(string):
+    """Assert string matches 'end' pattern.
+
+    :param str string: string
+
+    :raises: argparse.ArgumentTypeError
+
+    :returns: date
+    :rtype: datetime.datetime
+    """
+    if string == "@all":
+        raise argparse.ArgumentTypeError(f"'{string}' is not a valid datetime")
+
+
 def split(argv):
     """Split command-line arguments.
 
@@ -144,10 +174,7 @@ def split(argv):
         if not split:
             continue
         if split in _RESERVED_CHARS:
-            if len(args) == 1:
-                args.append(split)
-                continue
-            if split == "[":
+            if split in ("@", "["):
                 sep = split
             if split == "]":
                 args[-1] += split
@@ -223,7 +250,20 @@ def _init_subparsers(parser):
     subcommands = {
         "list": {
             "help": "list tasks",
-            "arguments": {},
+            "arguments": {
+                "start": {
+                    "nargs": "?",
+                    "default": "@all",
+                    "type": datetime_,
+                    "help": "keyword ('@all', '@year', '@month', '@week', '@yesterday', '@today') or date/time in @YYY-MM-DDThh:mm format, e.g. '@2024-04-01', '@17:56', '@2024-04-01T17:56'"   # noqa: E501
+                },
+                "end": {
+                    "nargs": "?",
+                    "default": "@now",
+                    "type": datetime_,
+                    "help": "keyword ('@year', '@month', '@week', '@yesterday', '@today', '@now') or date/time in @YYY-MM-DDThh:mm format, e.g. '@2024-04-01', '@17:56', '@2024-04-01T17:56'"   # noqa: E501
+                },
+            },
             "func": pusteblume.tasks.list_,
         },
         "start": {

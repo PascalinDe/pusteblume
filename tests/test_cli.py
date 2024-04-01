@@ -103,6 +103,10 @@ class ArgumentTypeTestCase(unittest.TestCase):
                 datetime.datetime(yesterday.year, yesterday.month, yesterday.day, 0, 0),
             ),
             ("today", datetime.datetime(now.year, now.month, now.day, 0, 0)),
+            (
+                "now",
+                datetime.datetime(now.year, now.month, now.day, now.hour, now.minute),
+            ),
         ):
             self.assertEqual(pusteblume.cli.datetime_(f"@{string}"), expected)
         expected = datetime.datetime(now.year, now.month, now.day, now.hour, now.minute)
@@ -149,6 +153,12 @@ class SplitTestCase(unittest.TestCase):
         Expecting: 'list' subcommand
         """
         args = ["list"]
+        self.assertListEqual(pusteblume.cli.split(args), args)
+        # start
+        args = [*args, "@all"]
+        self.assertListEqual(pusteblume.cli.split(args), args)
+        # start and end
+        args = [*args, "@now"]
         self.assertListEqual(pusteblume.cli.split(args), args)
 
     def test_status(self):

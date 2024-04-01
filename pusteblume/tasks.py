@@ -353,10 +353,12 @@ def stop(config):
     )
 
 
-def list_(config):
+def list_(config, start=None, end=None):
     """List tasks.
 
     :param configparser.ConfigParser config: configuration
+    :param datetime.datetime start: date/time
+    :param datetime.datetime end: date/time
 
     :returns: output
     :rtype: str
@@ -370,7 +372,8 @@ def list_(config):
             ).pprinted_long
             for (task_id, name, start_time, end_time) in _execute(
                 config,
-                "SELECT id,name,start_time,end_time FROM task",
+                "SELECT id,name,start_time,end_time FROM task WHERE start_time BETWEEN ? AND ? ORDER BY start_time DESC",    # noqa: E501
+                (start, end),
             )
         ]
     )
