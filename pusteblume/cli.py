@@ -138,6 +138,7 @@ def start(string):
     """
     if string == "@now":
         raise argparse.ArgumentTypeError(f"'{string}' is not a valid datetime")
+    return datetime_(string)
 
 
 def end(string):
@@ -152,6 +153,12 @@ def end(string):
     """
     if string == "@all":
         raise argparse.ArgumentTypeError(f"'{string}' is not a valid datetime")
+    if string == "@now":
+        string = (
+            datetime.datetime.now()
+            + datetime.timedelta(minutes=1)
+        ).strftime("@%Y-%m-%dT%H:%M")
+    return datetime_(string)
 
 
 def split(argv):
@@ -254,13 +261,13 @@ def _init_subparsers(parser):
                 "start": {
                     "nargs": "?",
                     "default": "@all",
-                    "type": datetime_,
+                    "type": start,
                     "help": "keyword ('@all', '@year', '@month', '@week', '@yesterday', '@today') or date/time in @YYY-MM-DDThh:mm format, e.g. '@2024-04-01', '@17:56', '@2024-04-01T17:56'",  # noqa: E501
                 },
                 "end": {
                     "nargs": "?",
                     "default": "@now",
-                    "type": datetime_,
+                    "type": end,
                     "help": "keyword ('@year', '@month', '@week', '@yesterday', '@today', '@now') or date/time in @YYY-MM-DDThh:mm format, e.g. '@2024-04-01', '@17:56', '@2024-04-01T17:56'",  # noqa: E501
                 },
             },
