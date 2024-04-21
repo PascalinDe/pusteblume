@@ -154,10 +154,9 @@ def end(string):
     if string == "@all":
         raise argparse.ArgumentTypeError(f"'{string}' is not a valid datetime")
     if string == "@now":
-        string = (
-            datetime.datetime.now()
-            + datetime.timedelta(minutes=1)
-        ).strftime("@%Y-%m-%dT%H:%M")
+        string = (datetime.datetime.now() + datetime.timedelta(minutes=1)).strftime(
+            "@%Y-%m-%dT%H:%M"
+        )
     return datetime_(string)
 
 
@@ -311,6 +310,18 @@ def _init_subparsers(parser):
                     "default": "",
                     "type": tag,
                     "help": "tags, e.g. '[pusteblume][v1.3]'",
+                },
+                "start": {
+                    "nargs": "?",
+                    "default": "@all",
+                    "type": datetime_,
+                    "help": "keyword ('@all', '@year', '@month', '@week', '@yesterday', '@today') or date/time in @YYY-MM-DDThh:mm format, e.g. '@2024-04-01', '@17:56', '@2024-04-01T17:56'",  # noqa: E501
+                },
+                "end": {
+                    "nargs": "?",
+                    "default": "@now",
+                    "type": datetime_,
+                    "help": "keyword ('@year', '@month', '@week', '@yesterday', '@today', '@now') or date/time in @YYY-MM-DDThh:mm format, e.g. '@2024-04-01', '@17:56', '@2024-04-01T17:56'",  # noqa: E501
                 },
             },
             "func": pusteblume.tasks.edit,

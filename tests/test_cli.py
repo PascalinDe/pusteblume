@@ -176,9 +176,35 @@ class SplitTestCase(unittest.TestCase):
         Trying: split 'edit' subcommand
         Expecting: 'edit' subcommand and its command-line arguments
         """
-        args = ["edit", "write test cases"]
+        command = "edit"
+        name = "write test cases"
+        tags = ["[pusteblume]", "[v1.2]"]
+        start = "@all"
+        end = "@now"
         # name
-        self.assertListEqual(pusteblume.cli.split(args), args)
+        self.assertListEqual(pusteblume.cli.split([command, name]), [command, name])
         # name and tags
-        args = [*args, "[pusteblume]", "[v1.2]"]
-        self.assertListEqual(pusteblume.cli.split(args), args)
+        self.assertListEqual(
+            pusteblume.cli.split([command, name, *tags]),
+            [command, name, *tags],
+        )
+        # name and start
+        self.assertListEqual(
+            pusteblume.cli.split([command, name, start]),
+            [command, name, start],
+        )
+        # name, start and end
+        self.assertListEqual(
+            pusteblume.cli.split([command, name, start, end]),
+            [command, name, start, end],
+        )
+        # name, tags and start
+        self.assertListEqual(
+            pusteblume.cli.split([command, name, *tags, start]),
+            [command, name, *tags, start],
+        )
+        # name, tags, start and end
+        self.assertListEqual(
+            pusteblume.cli.split([command, name, *tags, start, end]),
+            [command, name, *tags, start, end],
+        )
