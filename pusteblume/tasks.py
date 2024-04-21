@@ -372,7 +372,7 @@ def list_(config, start=None, end=None):
             ).pprinted_long
             for (task_id, name, start_time, end_time) in _execute(
                 config,
-                "SELECT id,name,start_time,end_time FROM task WHERE start_time BETWEEN ? AND ? ORDER BY start_time DESC",    # noqa: E501
+                "SELECT id,name,start_time,end_time FROM task WHERE start_time BETWEEN ? AND ? ORDER BY start_time DESC",  # noqa: E501
                 (start, end),
             )
         ]

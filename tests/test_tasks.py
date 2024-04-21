@@ -315,30 +315,28 @@ class TasksTestCase(BaseTestCase):
         now = datetime.datetime.now()
         monday = now - datetime.timedelta(days=now.weekday())
         yesterday = now - datetime.timedelta(days=1)
-        expected = (
-            list(
-                pusteblume.tasks.Task(
-                    self.name,
-                    self.tags,
-                    (start_time, start_time + datetime.timedelta(minutes=1)),
-                )
-                for start_time in (
-                    datetime.datetime(now.year, now.month, now.day, 0, 1),
-                    datetime.datetime(
-                        yesterday.year,
-                        yesterday.month,
-                        yesterday.day,
-                        0,
-                        1,
-                    ),
-                    datetime.datetime(monday.year, monday.month, monday.day, 0, 1),
-                    datetime.datetime(now.year, now.month, 1, 0, 1),
-                    datetime.datetime(now.year, 1, 1, 0, 1),
-                    datetime.datetime(datetime.MINYEAR, 1, 1, 0, 1),
-                )
+        expected = list(
+            pusteblume.tasks.Task(
+                self.name,
+                self.tags,
+                (start_time, start_time + datetime.timedelta(minutes=1)),
+            )
+            for start_time in (
+                datetime.datetime(now.year, now.month, now.day, 0, 1),
+                datetime.datetime(
+                    yesterday.year,
+                    yesterday.month,
+                    yesterday.day,
+                    0,
+                    1,
+                ),
+                datetime.datetime(monday.year, monday.month, monday.day, 0, 1),
+                datetime.datetime(now.year, now.month, 1, 0, 1),
+                datetime.datetime(now.year, 1, 1, 0, 1),
+                datetime.datetime(datetime.MINYEAR, 1, 1, 0, 1),
             )
         )
-        expected.sort(reverse=True)     # yesterday might be a Sunday
+        expected.sort(reverse=True)  # yesterday might be a Sunday
         running_task = pusteblume.tasks.Task(
             self.name,
             self.tags,
@@ -357,8 +355,7 @@ class TasksTestCase(BaseTestCase):
                     end=now,
                 ),
                 os.linesep.join(
-                    task.pprinted_long
-                    for task in (running_task, *expected[:i + 1])
+                    task.pprinted_long for task in (running_task, *expected[: i + 1])
                 ),
             )
 

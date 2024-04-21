@@ -93,7 +93,7 @@ class ArgumentTypeTestCase(unittest.TestCase):
         now = datetime.datetime.now()
         monday = now - datetime.timedelta(days=now.weekday())
         yesterday = now - datetime.timedelta(days=1)
-        for (string, expected) in (
+        for string, expected in (
             ("all", datetime.datetime(datetime.MINYEAR, 1, 1, 0, 0)),
             ("year", datetime.datetime(now.year, 1, 1, 0, 0)),
             ("month", datetime.datetime(now.year, now.month, 1, 0, 0)),
