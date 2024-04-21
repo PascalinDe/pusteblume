@@ -248,7 +248,7 @@ def _get_task(config, name, tags):
 
     :param configparser.ConfigParser config: configuration
     :param str name: name
-    :param tuple tags: tags
+    :param list tags: tags
 
     :returns: task(s)
     :rtype: generator
@@ -259,7 +259,7 @@ def _get_task(config, name, tags):
         (name,),
     ):
         related_tags = _get_related_tags(config, task_id)
-        if tuple(name for (name, _) in related_tags) == tags:
+        if list(name for (name, _) in related_tags) == tags:
             yield (
                 task_id,
                 Task(
@@ -428,7 +428,7 @@ def edit(config, name=None, tags=tuple()):
 
     :param configparser.ConfigParser config: configuration
     :param str name: task name
-    :param tuple tags: tag(s)
+    :param list tags: tag(s)
 
     :returns: output
     :rtype: str

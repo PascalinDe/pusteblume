@@ -462,11 +462,11 @@ class TasksTestCase(BaseTestCase):
         pusteblume.tasks.edit(
             self.config,
             self.name,
-            (
+            [
                 "pusteblume",
                 "v1.2",
                 "test cases",
-            ),
+            ],
         )
         self.assertEqual(
             pusteblume.tasks._execute(
