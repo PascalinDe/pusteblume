@@ -224,6 +224,12 @@ def parse_input(input_, type_, choices=()):
             choices=choices,
         )
         input_ = [input_]
+    if type_ in ("start_time", "end_time"):
+        parser.add_argument(
+            type_,
+            type={"start_time": start, "end_time": end}[type_],
+        )
+        input_ = [f"@{input_}"]
     return parser.parse_args(input_)
 
 

@@ -243,20 +243,27 @@ def _get_currently_running_task(config):
     )
 
 
-def _get_task(config, name, tags):
+def _get_task(config, name, tags, start=None, end=None):
     """Get task by name and (if applicable) tags.
 
     :param configparser.ConfigParser config: configuration
     :param str name: name
     :param list tags: tags
+    :param datetime.datetime start: date/time
+    :param datetime.datetime end: date/time
 
     :returns: task(s)
     :rtype: generator
     """
+    statement = "SELECT id,start_time,end_time FROM task WHERE name = ?"
+    parameters = (name,)
+    if all((start, end)):
+        statement = f"{statement} AND start_time BETWEEN ? AND ?"
+        parameters = (*parameters, start, end)
     for task_id, start_time, end_time in _execute(
         config,
-        "SELECT id,start_time,end_time FROM task WHERE name = ?",
-        (name,),
+        statement,
+        parameters,
     ):
         related_tags = _get_related_tags(config, task_id)
         if list(name for (name, _) in related_tags) == tags:
@@ -423,17 +430,19 @@ def _select(config, prompt, choices):
     ).choice
 
 
-def edit(config, name=None, tags=tuple()):
+def edit(config, name=None, tags=tuple(), start=None, end=None):
     """Edit task.
 
     :param configparser.ConfigParser config: configuration
     :param str name: task name
     :param list tags: tag(s)
+    :param datetime.datetime start: date/time
+    :param datetime.datetime end: date/time
 
     :returns: output
     :rtype: str
     """
-    tasks = list(_get_task(config, name, tags))
+    tasks = list(_get_task(config, name, tags, start=start, end=end))
     if not tasks:
         return f"no task '{Task(name, tags, (None, None)).pprinted_short}'"
     if len(tasks) > 1:
@@ -448,17 +457,26 @@ def edit(config, name=None, tags=tuple()):
     else:
         task_id, task = tasks[0]
     print(f"editing '{task.pprinted_medium}' …")
-    attrs = ["name", "tag"]
+    attrs = ["name", "tag", "start_time", "end_time"]
     attr = attrs[_select(config, "choose attribute to edit: …", attrs) - 1]
     new_value = _input(f"new value of {attr}: …")
     parsed_input = pusteblume.cli.parse_input(new_value, attr)
-    if attr == "name":
+    if attr in ("name", "start_time", "end_time"):
         _execute(
             config,
             f"UPDATE task SET {attr} = ? WHERE id = ?",
-            (parsed_input.name, task_id),
+            (getattr(parsed_input, attr), task_id),
         )
-        print(Task(parsed_input.name, tags, (None, None)).pprinted_short)
+        print(
+            Task(
+                getattr(parsed_input, "name", task.name),
+                tags,
+                (
+                    getattr(parsed_input, "start_time", task.time_range[0]),
+                    getattr(parsed_input, "end_time", task.time_range[1]),
+                )
+            ).pprinted_medium,
+        )
     if attr == "tag":
         for tag_name, tag_id in _get_related_tags(config, task_id):
             if tag_name not in parsed_input.tag:

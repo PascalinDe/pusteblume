@@ -475,3 +475,94 @@ class TasksTestCase(BaseTestCase):
             ),
             [("pusteblume",), ("v1.2",), ("unit tests",)],
         )
+
+        @patch(
+            "pusteblume.tasks._input",
+            side_effect=(
+                "3",
+                "month",
+            ),
+        )
+        def test_edit_start_time(self, mock_input):
+            """Test editing start_time.
+
+            Trying: editing start_time
+            Expecting: start_time has been edited
+            """
+            task_id = self._insert_task(
+                self.name,
+                self.tags,
+                self.start_time,
+                self.start_time + datetime.timedelta(minutes=1),
+            )
+            pusteblume.tasks.edit(
+                self.config,
+                self.name,
+                self.tags,
+            )
+            self.assertEqual(
+                pusteblume.tasks._execute(
+                    self.config,
+                    """SELECT start_time FROM task WHERE id = ?""",
+                    (task_id,),
+                ),
+                [
+                    (
+                        datetime.datetime(
+                            self.start_time.year,
+                            self.start_time.month,
+                            1,
+                            0,
+                            0,
+                        ),
+                    ),
+                ],
+            )
+
+        @patch(
+            "pusteblume.tasks._input",
+            side_effect=(
+                "4",
+                "month",
+            ),
+        )
+        def test_edit_end_time(self, mock_input):
+            """Test editing end_time.
+
+            Trying: editing end_time
+            Expecting: end_time has been edited
+            """
+            task_id = self._insert_task(
+                self.name,
+                self.tags,
+                datetime.datetime(
+                    self.start_time.year,
+                    self.start_time.month,
+                    1,
+                    0,
+                    0,
+                ) - datetime.timedelta(minutes=1),
+            )
+            pusteblume.tasks.edit(
+                self.config,
+                self.name,
+                self.tags,
+            )
+            self.assertEqual(
+                pusteblume.tasks._execute(
+                    self.config,
+                    """SELECT end_time FROM task WHERE id = ?""",
+                    (task_id,),
+                ),
+                [
+                    (
+                        datetime.datetime(
+                            self.start_time.year,
+                            self.start_time.month,
+                            1,
+                            0,
+                            0,
+                        ),
+                    ),
+                ],
+            )
