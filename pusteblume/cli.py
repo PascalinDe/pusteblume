@@ -304,6 +304,24 @@ def _init_subparsers(parser):
             "arguments": {},
             "func": pusteblume.tasks.show,
         },
+        "status": {
+            "help": "",
+            "arguments": {
+                "start": {
+                    "nargs": "?",
+                    "default": "@all",
+                    "type": datetime_,
+                    "help": "keyword ('@all', '@year', '@month', '@week', '@yesterday', '@today') or date/time in @YYY-MM-DDThh:mm format, e.g. '@2024-04-01', '@17:56', '@2024-04-01T17:56'",  # noqa: E501
+                },
+                "end": {
+                    "nargs": "?",
+                    "default": "@now",
+                    "type": datetime_,
+                    "help": "keyword ('@year', '@month', '@week', '@yesterday', '@today', '@now') or date/time in @YYY-MM-DDThh:mm format, e.g. '@2024-04-01', '@17:56', '@2024-04-01T17:56'",  # noqa: E501
+                },
+            },
+            "func": pusteblume.tasks.status,
+        },
         "edit": {
             "help": "edit task",
             "arguments": {

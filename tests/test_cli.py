@@ -170,6 +170,21 @@ class SplitTestCase(unittest.TestCase):
         args = ["show"]
         self.assertListEqual(pusteblume.cli.split(args), args)
 
+    def test_status(self):
+        """Test splitting 'status' subcommand.
+
+        Trying: split 'status' subcommand
+        Expecting: 'status' subcommand
+        """
+        args = ["status"]
+        self.assertListEqual(pusteblume.cli.split(args), args)
+        # start
+        args = [*args, "@all"]
+        self.assertListEqual(pusteblume.cli.split(args), args)
+        # start and end
+        args = [*args, "@now"]
+        self.assertListEqual(pusteblume.cli.split(args), args)
+
     def test_edit(self):
         """Test splitting 'edit' subcommand.
 
