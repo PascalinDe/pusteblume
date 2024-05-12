@@ -359,7 +359,7 @@ class TasksTestCase(BaseTestCase):
                 ),
             )
 
-    def test_status_no_running_task(self):
+    def test_show_no_running_task(self):
         """Test showing currently running task.
 
 
@@ -367,11 +367,11 @@ class TasksTestCase(BaseTestCase):
         Expecting: 'no running task' message
         """
         self.assertEqual(
-            pusteblume.tasks.status(self.config),
+            pusteblume.tasks.show(self.config),
             "no running task",
         )
 
-    def test_status_running_task(self):
+    def test_show_running_task(self):
         """Test showing currently running task.
 
         Trying: running task
@@ -389,7 +389,7 @@ class TasksTestCase(BaseTestCase):
         )
         task = pusteblume.tasks.Task(self.name, self.tags, (start_time, None))
         self.assertEqual(
-            pusteblume.tasks.status(self.config),
+            pusteblume.tasks.show(self.config),
             task.pprinted_short,
         )
 

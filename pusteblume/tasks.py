@@ -386,7 +386,7 @@ def list_(config, start=None, end=None):
     )
 
 
-def status(config):
+def show(config):
     """Show currently running task if any.
 
     :param configparser.ConfigParser config: configuration

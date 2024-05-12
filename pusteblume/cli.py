@@ -299,10 +299,10 @@ def _init_subparsers(parser):
             "arguments": {},
             "func": pusteblume.tasks.stop,
         },
-        "status": {
+        "show": {
             "help": "output running task",
             "arguments": {},
-            "func": pusteblume.tasks.status,
+            "func": pusteblume.tasks.show,
         },
         "edit": {
             "help": "edit task",
